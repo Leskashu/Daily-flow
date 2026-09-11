@@ -1,17 +1,17 @@
 {
   "name": "Daily Flow",
   "short_name": "Daily Flow",
-  "description": "Premium habit tracker in editorial luxury style",
+  "description": "Персональный трекер привычек, ритма и прогресса",
+  "lang": "ru",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f5efe7",
-  "theme_color": "#0f2420",
+  "orientation": "any",
+  "background_color": "#090c0d",
+  "theme_color": "#0b0f10",
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"},
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
   ]
 }
