@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f2420" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Daily Flow" />
+  <title>Daily Flow</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <main class="app-shell">
+    <header class="hero glass">
+      <div>
+        <p class="eyebrow">Personal ritual system</p>
+        <h1>DAILY<br>FLOW</h1>
+        <p class="hero-note">Не мотивация. Ритм.</p>
+      </div>
+      <button id="openSettings" class="icon-btn" aria-label="Открыть настройки">⋯</button>
+    </header>
+
+    <section class="overview-grid">
+      <article class="overview-card glass hero-progress">
+        <p class="eyebrow">Сегодня</p>
+        <div class="progress-row">
+          <div>
+            <div class="progress-value"><span id="doneCount">0</span><span class="muted">/6</span></div>
+            <p class="caption">закрыто на сегодня</p>
+          </div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 120 120" class="progress-ring" aria-hidden="true">
+              <circle cx="60" cy="60" r="48" class="ring-bg"></circle>
+              <circle cx="60" cy="60" r="48" class="ring-fill" id="ringFill"></circle>
+            </svg>
+            <div class="ring-label" id="ringLabel">0%</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="overview-card glass streak-card">
+        <p class="eyebrow">Серия</p>
+        <div class="streak-value"><span id="streakCount">0</span> дней</div>
+        <p class="caption">маленькие шаги каждый день</p>
+      </article>
+    </section>
+
+    <section class="habit-section glass">
+      <div class="section-head">
+        <p class="eyebrow">Today ritual</p>
+        <button id="resetToday" class="text-btn">Сбросить день</button>
+      </div>
+
+      <div class="category">
+        <div class="category-title">BODY</div>
+        <div class="habit-list" id="bodyList"></div>
+      </div>
+
+      <div class="category">
+        <div class="category-title">GROWTH</div>
+        <div class="habit-list" id="growthList"></div>
+      </div>
+
+      <div class="category">
+        <div class="category-title">CREATIVE</div>
+        <div class="habit-list" id="creativeList"></div>
+      </div>
+    </section>
+
+    <section class="history-section glass">
+      <div class="section-head">
+        <p class="eyebrow">Recent history</p>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog" class="settings-dialog">
+    <form method="dialog" class="settings-sheet glass-strong">
+      <div class="settings-top">
+        <div>
+          <p class="eyebrow">Settings</p>
+          <h2>Daily Flow</h2>
+        </div>
+        <button class="icon-btn close-btn" value="cancel" aria-label="Закрыть">×</button>
+      </div>
+
+      <div class="settings-block">
+        <label class="setting-row">
+          <span>Имя</span>
+          <input id="nameInput" type="text" maxlength="30" placeholder="Олеся" />
+        </label>
+      </div>
+
+      <div class="settings-block">
+        <p class="setting-label">Привычки</p>
+        <div id="settingsHabits" class="settings-habits"></div>
+      </div>
+
+      <div class="settings-actions">
+        <button id="saveSettings" class="primary-btn" value="default">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="habitTemplate">
+    <button class="habit-item" type="button">
+      <span class="habit-toggle" aria-hidden="true"></span>
+      <span class="habit-copy">
+        <span class="habit-title"></span>
+        <span class="habit-sub"></span>
+      </span>
+    </button>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
