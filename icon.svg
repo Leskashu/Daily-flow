@@ -1,14 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f8f3ec"/>
-      <stop offset="1" stop-color="#ece6dd"/>
+      <stop offset="0" stop-color="#090c0d"/>
+      <stop offset="0.58" stop-color="#10211e"/>
+      <stop offset="1" stop-color="#171514"/>
     </linearGradient>
+    <radialGradient id="emerald" cx="20%" cy="18%" r="78%">
+      <stop offset="0" stop-color="#7eb9aa" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#315d53" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cream" cx="88%" cy="12%" r="66%">
+      <stop offset="0" stop-color="#efe4d1" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#efe4d1" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mark" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#6ba999"/>
+      <stop offset=".52" stop-color="#a8d1c4"/>
+      <stop offset="1" stop-color="#f0e3ce"/>
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="55"/></filter>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <circle cx="410" cy="85" r="125" fill="#c9ded4" opacity=".92"/>
-  <circle cx="80" cy="430" r="115" fill="#ead9cf" opacity=".92"/>
-  <rect x="82" y="82" width="348" height="348" rx="90" fill="#ffffff" fill-opacity=".58" stroke="#ffffff" stroke-opacity=".8"/>
-  <text x="256" y="278" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="150" font-weight="700" fill="#0f2420">DF</text>
-  <text x="256" y="340" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" letter-spacing="5" fill="#6f7b76">DAILY FLOW</text>
+  <rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="230" fill="url(#emerald)"/>
+  <rect width="1024" height="1024" rx="230" fill="url(#cream)"/>
+  <circle cx="240" cy="760" r="215" fill="#7f8992" opacity=".16" filter="url(#blur)"/>
+  <rect x="140" y="140" width="744" height="744" rx="208" fill="#fff" fill-opacity=".085" stroke="#fff" stroke-opacity=".16" stroke-width="3"/>
+  <path d="M304 525c0-121 88-217 209-217 91 0 162 48 198 117" fill="none" stroke="url(#mark)" stroke-width="66" stroke-linecap="round"/>
+  <path d="M704 498c0 122-87 218-209 218-77 0-145-39-183-99" fill="none" stroke="#efe4d1" stroke-opacity=".82" stroke-width="42" stroke-linecap="round"/>
+  <path d="M375 523l82 86 194-213" fill="none" stroke="url(#mark)" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
