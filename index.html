@@ -1,125 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f2420" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Daily Flow" />
-  <title>Daily Flow</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon.svg" />
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#15181d"><title>Daily Flow — Desktop Habit Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#15181d;--bg2:#101217;--glass:rgba(255,255,255,.075);--glass2:rgba(255,255,255,.045);--line:rgba(255,255,255,.10);--txt:#f5f6f8;--muted:#aeb5bf;--teal:#8bd3c7;--lav:#aa9ce9;--rose:#f0b4c3;--blue:#80c7da;--sand:#edc18c;--shadow:0 24px 60px rgba(0,0,0,.30)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(circle at 0 0,rgba(139,211,199,.14),transparent 26%),radial-gradient(circle at 100% 0,rgba(170,156,233,.13),transparent 22%),radial-gradient(circle at 35% 100%,rgba(240,180,195,.1),transparent 22%),linear-gradient(180deg,var(--bg),var(--bg2));overflow-x:auto}.app{min-width:1280px;display:grid;grid-template-columns:170px minmax(1100px,1fr);gap:18px;padding:18px;min-height:100vh}.glass{background:var(--glass);border:1px solid var(--line);border-radius:28px;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);box-shadow:var(--shadow)}.soft{background:var(--glass2);border:1px solid var(--line);border-radius:18px}.side{padding:16px;display:flex;flex-direction:column;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(139,211,199,.34),rgba(255,255,255,.10));font-weight:700}.muted{color:var(--muted)}.small{font-size:12px}.nav{display:grid;gap:9px;margin-top:24px}.nav button,.tabs button,.ghost,.primary,.add,.check,.delete{font:inherit;cursor:pointer}.nav button{border:0;background:transparent;color:var(--muted);padding:13px 12px;border-radius:16px;text-align:left}.nav button.active,.nav button:hover{background:rgba(255,255,255,.08);color:var(--txt)}.sidequote{padding:14px;font-size:13px;line-height:1.5;color:var(--muted)}.main{display:grid;gap:16px;min-width:0}.top{padding:18px 22px;display:grid;grid-template-columns:1.2fr auto auto;gap:18px;align-items:center}.top h1{margin:0;font-size:30px;line-height:1}.sub{margin:5px 0 0;color:var(--muted);font-size:13px}.tabs{display:flex;gap:6px;padding:6px;border-radius:999px;background:rgba(255,255,255,.05)}.tabs button{border:0;background:transparent;color:var(--muted);padding:9px 15px;border-radius:999px}.tabs .active{background:#f4f6f8;color:#13171c}.right{display:flex;align-items:center;gap:10px}.search{display:flex;align-items:center;gap:8px;padding:11px 14px;border-radius:999px;min-width:205px}.search input{border:0;outline:0;background:transparent;color:var(--txt);font:inherit;width:100%}.icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--txt);cursor:pointer}.hero{display:grid;grid-template-columns:2fr repeat(4,1fr) 1.2fr;gap:14px}.card{padding:17px}.metric{min-height:176px;display:flex;flex-direction:column;justify-content:space-between}.eyebrow{margin:0 0 6px;color:var(--muted);font-size:10px;letter-spacing:.14em;text-transform:uppercase}.big{font-size:42px;font-weight:700;letter-spacing:-.06em}.clockgrid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:center}.clock{display:flex;align-items:center;gap:12px}.pair{display:flex;gap:9px}.flip{width:92px;height:126px;border-radius:22px;display:grid;place-items:center;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.14)}.flip:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,255,255,.15)}.flip span{font-size:80px;font-weight:700;letter-spacing:-.08em}.colon{width:8px;height:8px;border-radius:50%;background:white;opacity:.7;position:relative}.colon:after{content:"";position:absolute;top:18px;width:8px;height:8px;border-radius:50%;background:white}.clockdate{font-size:19px;font-weight:600;line-height:1.25}.ring svg{width:92px;height:92px}.metricrow{display:flex;align-items:center;gap:14px}.bar{height:9px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--lav));border-radius:inherit}.quote{position:relative;overflow:hidden;display:flex;align-items:flex-end}.quote:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,17,22,.05),rgba(15,17,22,.48)),radial-gradient(circle at 70% 18%,rgba(255,255,255,.65),transparent 10%),linear-gradient(145deg,#a6bfd2 0 35%,#dbe4ea 36% 52%,#596576 53% 70%,#c9d3db 71% 100%);opacity:.9}.quote blockquote{position:relative;margin:0;font-size:27px;line-height:1.18;max-width:280px}.workspace{display:grid;grid-template-columns:2.2fr 1fr .85fr;gap:14px;align-items:start}.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.head h2{margin:0;font-size:18px}.actions{display:flex;gap:7px}.ghost,.add,.primary,.delete{border:0;color:var(--txt);background:rgba(255,255,255,.075);padding:10px 13px;border-radius:14px}.ghost{border-radius:999px}.primary{background:linear-gradient(135deg,var(--teal),#9db3ff);color:#11151a;font-weight:700}.delete{background:rgba(240,180,195,.15);color:#ffd0da}.monthwrap{overflow:auto;max-height:440px}.tracker{min-width:980px}.tracker table{width:100%;border-collapse:separate;border-spacing:0 7px}.tracker th,.tracker td{font-size:11px}.tracker thead th{color:var(--muted);font-weight:500;text-align:center;padding-bottom:5px}.tracker .habitcol{text-align:left;min-width:215px;padding-left:6px}.habitlabel{display:flex;align-items:center;gap:9px;padding:3px 6px}.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}.cat{font-size:10px;color:var(--muted);margin-top:2px}.cell{width:23px;height:23px;border-radius:7px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035);cursor:pointer;transition:.12s}.cell:hover{transform:scale(1.08)}.cell.today{border-color:rgba(255,255,255,.45)}.rowprog{display:flex;gap:8px;align-items:center}.rowbar{width:64px;height:7px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}.rowbar span{display:block;height:100%;border-radius:99px}.foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px}.todaylist{display:grid;gap:9px;max-height:400px;overflow:auto}.todayitem{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:11px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.075)}.check{width:21px;height:21px;border-radius:7px;border:1px solid rgba(255,255,255,.18);background:transparent}.check.on{background:linear-gradient(135deg,var(--teal),var(--lav));border-color:transparent}.todayitem strong{display:block;font-size:13px}.todayitem span{font-size:11px;color:var(--muted)}.rank{display:grid;gap:10px;margin-bottom:14px}.rankrow{display:grid;grid-template-columns:27px 1fr auto;gap:10px;align-items:center;padding:10px;border-radius:15px;background:rgba(255,255,255,.055)}.badge{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;color:#11151a;font-weight:700}.focus{padding:13px;margin-bottom:12px}.focus b{display:block;margin-bottom:4px}.charts{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:14px}.chartbox{height:210px}.chartbox canvas{width:100%!important;height:100%!important}.donutrow{display:grid;grid-template-columns:135px 1fr;gap:12px;align-items:center;min-height:210px}.legend{display:grid;gap:8px}.legendrow{display:flex;justify-content:space-between;align-items:center;gap:10px}.legendlabel{display:flex;align-items:center;gap:8px}.overlay{position:fixed;inset:0;background:rgba(6,8,12,.6);backdrop-filter:blur(9px);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.overlay.open{display:flex}.modal{width:min(760px,calc(100vw - 40px));padding:20px;border-radius:28px;background:rgba(25,29,36,.88);border:1px solid var(--line);box-shadow:var(--shadow)}.modalhead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:15px}.modal h3{margin:0;font-size:24px}.habitmanager{display:grid;gap:9px;max-height:330px;overflow:auto}.manageitem{display:grid;grid-template-columns:1fr 180px 105px;gap:9px;padding:10px}.manageitem input,.manageitem select,.field input,.field select{width:100%;padding:11px 13px;border-radius:13px;border:1px solid var(--line);background:rgba(10,12,18,.42);color:var(--txt);font:inherit}.newbox{padding:14px;margin-top:14px}.newgrid{display:grid;grid-template-columns:1fr 220px;gap:10px}.field{display:grid;gap:7px}.modalactions{display:flex;justify-content:flex-end;margin-top:14px}.close{border:0;background:rgba(255,255,255,.07);color:var(--txt);width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer}@media(max-width:1600px){.hero{grid-template-columns:1.7fr repeat(4,1fr)}.quote{grid-column:span 2}.workspace{grid-template-columns:1.75fr 1fr}.stats{grid-column:span 2}.charts{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
-  <div class="bg-orb orb-3"></div>
-
-  <main class="app-shell">
-    <header class="hero glass">
-      <div>
-        <p class="eyebrow">Personal ritual system</p>
-        <h1>DAILY<br>FLOW</h1>
-        <p class="hero-note">Не мотивация. Ритм.</p>
-      </div>
-      <button id="openSettings" class="icon-btn" aria-label="Открыть настройки">⋯</button>
-    </header>
-
-    <section class="overview-grid">
-      <article class="overview-card glass hero-progress">
-        <p class="eyebrow">Сегодня</p>
-        <div class="progress-row">
-          <div>
-            <div class="progress-value"><span id="doneCount">0</span><span class="muted">/6</span></div>
-            <p class="caption">закрыто на сегодня</p>
-          </div>
-          <div class="ring-wrap">
-            <svg viewBox="0 0 120 120" class="progress-ring" aria-hidden="true">
-              <circle cx="60" cy="60" r="48" class="ring-bg"></circle>
-              <circle cx="60" cy="60" r="48" class="ring-fill" id="ringFill"></circle>
-            </svg>
-            <div class="ring-label" id="ringLabel">0%</div>
-          </div>
-        </div>
-      </article>
-
-      <article class="overview-card glass streak-card">
-        <p class="eyebrow">Серия</p>
-        <div class="streak-value"><span id="streakCount">0</span> дней</div>
-        <p class="caption">маленькие шаги каждый день</p>
-      </article>
-    </section>
-
-    <section class="habit-section glass">
-      <div class="section-head">
-        <p class="eyebrow">Today ritual</p>
-        <button id="resetToday" class="text-btn">Сбросить день</button>
-      </div>
-
-      <div class="category">
-        <div class="category-title">BODY</div>
-        <div class="habit-list" id="bodyList"></div>
-      </div>
-
-      <div class="category">
-        <div class="category-title">GROWTH</div>
-        <div class="habit-list" id="growthList"></div>
-      </div>
-
-      <div class="category">
-        <div class="category-title">CREATIVE</div>
-        <div class="habit-list" id="creativeList"></div>
-      </div>
-    </section>
-
-    <section class="history-section glass">
-      <div class="section-head">
-        <p class="eyebrow">Recent history</p>
-      </div>
-      <div id="historyList" class="history-list"></div>
-    </section>
-  </main>
-
-  <dialog id="settingsDialog" class="settings-dialog">
-    <form method="dialog" class="settings-sheet glass-strong">
-      <div class="settings-top">
-        <div>
-          <p class="eyebrow">Settings</p>
-          <h2>Daily Flow</h2>
-        </div>
-        <button class="icon-btn close-btn" value="cancel" aria-label="Закрыть">×</button>
-      </div>
-
-      <div class="settings-block">
-        <label class="setting-row">
-          <span>Имя</span>
-          <input id="nameInput" type="text" maxlength="30" placeholder="Олеся" />
-        </label>
-      </div>
-
-      <div class="settings-block">
-        <p class="setting-label">Привычки</p>
-        <div id="settingsHabits" class="settings-habits"></div>
-      </div>
-
-      <div class="settings-actions">
-        <button id="saveSettings" class="primary-btn" value="default">Сохранить</button>
-      </div>
-    </form>
-  </dialog>
-
-  <template id="habitTemplate">
-    <button class="habit-item" type="button">
-      <span class="habit-toggle" aria-hidden="true"></span>
-      <span class="habit-copy">
-        <span class="habit-title"></span>
-        <span class="habit-sub"></span>
-      </span>
-    </button>
-  </template>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<div class="app"><aside class="side glass"><div><div class="brand"><div class="logo">DF</div><div><div>Daily Flow</div><div class="muted small">habit dashboard</div></div></div><nav class="nav"><button class="active">⌂ Главная</button><button>◎ Привычки</button><button>◫ Аналитика</button><button>☷ План</button><button>✎ Заметки</button><button>⚙ Настройки</button></nav></div><div class="sidequote soft">«Маленькие шаги каждый день приводят к большим результатам»</div></aside>
+<main class="main"><header class="top glass"><div><h1>Трекер привычек</h1><p class="sub">Desktop-дашборд: месяц, день, статистика и тенденции.</p></div><div class="tabs"><button class="active">Обзор</button><button>Привычки</button><button>Аналитика</button><button>План</button><button>Архив</button></div><div class="right"><div class="search soft"><span>⌕</span><input placeholder="Поиск..."></div><div id="topDate" class="muted small"></div><button class="icon" id="manageBtn">✦</button></div></header>
+<section class="hero"><article class="glass card"><div class="clockgrid"><div class="clock"><div class="pair"><div class="flip"><span id="h1">0</span></div><div class="flip"><span id="h2">0</span></div></div><div class="colon"></div><div class="pair"><div class="flip"><span id="m1">0</span></div><div class="flip"><span id="m2">0</span></div></div></div><div><p class="eyebrow">Сейчас</p><div id="clockDate" class="clockdate"></div><p class="sub">Сегодня — ещё один шанс сделать день не бессмысленным.</p></div></div></article>
+<article class="glass card metric"><p class="eyebrow">Общий прогресс</p><div class="metricrow"><div id="ring" class="ring"></div><div><div id="monthPct" class="big">0%</div><div id="monthMeta" class="sub"></div></div></div></article>
+<article class="glass card metric"><p class="eyebrow">Текущая серия</p><div class="big"><span id="streak">0</span> <span class="small muted">дней</span></div><div class="sub">Лучшая серия: <span id="best">0</span> дней</div></article>
+<article class="glass card metric"><p class="eyebrow">Привычки</p><div id="habitCount" class="big">0</div><div class="sub">активных в трекере</div></article>
+<article class="glass card metric"><p class="eyebrow">Сегодня</p><div class="big"><span id="todayDone">0</span><span class="small muted"> / <span id="todayTotal">0</span></span></div><div class="bar"><div id="todayBar"></div></div><div id="todayText" class="sub">Пока тихо.</div></article>
+<article class="glass card quote"><blockquote>«Дисциплина — это забота о себе в будущем»</blockquote></article></section>
+<section class="workspace"><article class="glass card"><div class="head"><div><h2 id="monthTitle">Трекер</h2><div class="sub">Отмечай выполнение за весь месяц</div></div><div class="actions"><button class="ghost" id="prev">←</button><button class="ghost" id="next">→</button><button class="ghost" id="todayMonth">Сегодня</button></div></div><div id="monthWrap" class="monthwrap"></div><div class="foot"><button class="add" id="manageBtn2">＋ Добавить / изменить привычки</button><span id="summary" class="small muted"></span></div></article>
+<article class="glass card"><div class="head"><div><h2>Сегодня</h2><div id="todayDate" class="sub"></div></div><button class="ghost" id="addTask">＋ Задача</button></div><div class="small muted"><span id="miniDone">0</span> из <span id="miniTotal">0</span> выполнено</div><div class="bar" style="margin:8px 0 13px"><div id="miniBar"></div></div><div id="todayList" class="todaylist"></div></article>
+<article class="glass card stats"><div class="head"><div><h2>Статистика</h2><div class="sub">Лучшие привычки</div></div></div><div id="rank" class="rank"></div><div class="focus soft"><b>Фокус месяца</b><div id="focusText" class="sub"></div></div><div class="soft" style="padding:13px;color:var(--muted)">«Привычки меняют не день, а всю жизнь»</div></article></section>
+<section class="charts"><article class="glass card"><div class="head"><div><h2>Динамика выполнения</h2><div class="sub">Факт по дням месяца</div></div></div><div class="chartbox"><canvas id="trendChart"></canvas></div></article><article class="glass card"><div class="head"><div><h2>Успех по неделям</h2><div class="sub">Доля выполнения</div></div></div><div class="chartbox"><canvas id="weekChart"></canvas></div></article><article class="glass card"><div class="head"><div><h2>Категории</h2><div class="sub">Структура привычек</div></div></div><div class="donutrow"><div class="chartbox" style="height:135px"><canvas id="catChart"></canvas></div><div id="legend" class="legend"></div></div></article><article class="glass card"><div class="head"><div><h2>Дни недели</h2><div class="sub">Средняя успешность</div></div></div><div class="chartbox"><canvas id="dayChart"></canvas></div></article></section>
+</main></div>
+<div id="manageOverlay" class="overlay"><div class="modal"><div class="modalhead"><div><p class="eyebrow">Настройки</p><h3>Привычки</h3></div><button class="close" data-close>×</button></div><div id="manager" class="habitmanager"></div><div class="newbox soft"><div class="newgrid"><label class="field"><span>Новая привычка</span><input id="newName" placeholder="Например, Растяжка"></label><label class="field"><span>Категория</span><select id="newCat"><option>Здоровье</option><option>Развитие</option><option>Осознанность</option><option>Питание</option><option>Работа</option></select></label></div><button id="createHabit" class="add" style="margin-top:11px">＋ Добавить</button></div><div class="modalactions"><button id="saveManage" class="primary">Сохранить изменения</button></div></div></div>
+<div id="taskOverlay" class="overlay"><div class="modal" style="max-width:520px"><div class="modalhead"><div><p class="eyebrow">Сегодня</p><h3>Новая задача</h3></div><button class="close" data-close>×</button></div><label class="field"><span>Название</span><input id="taskName" placeholder="Например, закрыть макет"></label><div class="modalactions"><button id="saveTask" class="primary">Добавить</button></div></div></div>
+<script>
+const K='daily-flow-desktop-v4',C=['#8bd3c7','#aa9ce9','#f0b4c3','#80c7da','#edc18c','#b2df8d','#d7d2ff'];const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);let charts={};let S=load();ensure();bind();render();clock();setInterval(clock,15000);
+function id(){return Math.random().toString(36).slice(2,10)}function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}function mk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}function dim(y,m){return new Date(y,m+1,0).getDate()}function save(){localStorage.setItem(K,JSON.stringify(S))}function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function load(){try{let r=localStorage.getItem(K);if(r)return JSON.parse(r)}catch(e){}let n=new Date(),hs=[['Чтение 30 минут','Развитие'],['Дорожка','Здоровье'],['Закрыть белок','Питание'],['Соцсети','Осознанность'],['Изучение языков','Развитие'],['Визуальное время','Работа']].map((x,i)=>({id:id(),title:x[0],category:x[1],color:C[i]})),comp={},tasks={};let days=dim(n.getFullYear(),n.getMonth());for(let d=1;d<=days;d++){let k=dk(new Date(n.getFullYear(),n.getMonth(),d));comp[k]={};hs.forEach((h,i)=>comp[k][h.id]=(Math.abs(Math.sin((d+2)*(i+4)*15))%1>.4)&&new Date(n.getFullYear(),n.getMonth(),d)<=n)}tasks[dk(n)]=[];return{month:mk(n),habits:hs,comp,tasks}}
+function ensure(){let t=dk(new Date());S.comp[t]=S.comp[t]||{};S.tasks[t]=S.tasks[t]||[];S.habits.forEach(h=>{if(typeof S.comp[t][h.id]!=='boolean')S.comp[t][h.id]=false});save()}
+function bind(){$('#prev').onclick=()=>shift(-1);$('#next').onclick=()=>shift(1);$('#todayMonth').onclick=()=>{S.month=mk(new Date());save();render()};$('#manageBtn').onclick=$('#manageBtn2').onclick=openManage;$('#createHabit').onclick=createHabit;$('#saveManage').onclick=saveManage;$('#addTask').onclick=()=>$('#taskOverlay').classList.add('open');$('#saveTask').onclick=addTask;$$('[data-close]').forEach(b=>b.onclick=closeAll);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()})}function closeAll(){$$('.overlay').forEach(x=>x.classList.remove('open'))}function shift(v){let[y,m]=S.month.split('-').map(Number),d=new Date(y,m-1+v,1);S.month=mk(d);save();render()}
+function clock(){let n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0');$('#h1').textContent=h[0];$('#h2').textContent=h[1];$('#m1').textContent=m[0];$('#m2').textContent=m[1];$('#topDate').textContent=new Intl.DateTimeFormat('ru-RU',{weekday:'short',day:'numeric',month:'long',year:'numeric'}).format(n);$('#clockDate').textContent=new Intl.DateTimeFormat('ru-RU',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(n);$('#todayDate').textContent=new Intl.DateTimeFormat('ru-RU',{weekday:'long',day:'numeric',month:'long'}).format(n)}function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}function render(){ensure();month();today();metrics();rank();drawCharts()}
+function month(){let[y,m]=S.month.split('-').map(Number),days=dim(y,m-1),td=dk(new Date());$('#monthTitle').textContent='Трекер на '+cap(new Intl.DateTimeFormat('ru-RU',{month:'long',year:'numeric'}).format(new Date(y,m-1,1)));$('#summary').textContent=S.habits.length+' привычек';let hh='<th class="habitcol">Привычка</th>';for(let d=1;d<=days;d++)hh+='<th>'+d+'</th>';hh+='<th>Прогресс</th>';let rows=S.habits.map(h=>{let done=0,c='';for(let d=1;d<=days;d++){let k=dk(new Date(y,m-1,d)),ok=!!S.comp[k]?.[h.id];if(ok)done++;c+='<td><button class="cell '+(k===td?'today':'')+'" style="background:'+(ok?h.color:'rgba(255,255,255,.035)')+'" data-k="'+k+'" data-h="'+h.id+'"></button></td>'}let p=Math.round(done/days*100);return'<tr><td class="habitcol"><div class="habitlabel"><span class="dot" style="background:'+h.color+'"></span><div><div>'+esc(h.title)+'</div><div class="cat">'+esc(h.category)+'</div></div></div></td>'+c+'<td><div class="rowprog"><span>'+p+'%</span><div class="rowbar"><span style="width:'+p+'%;background:'+h.color+'"></span></div></div></td></tr>'}).join('');$('#monthWrap').innerHTML='<div class="tracker"><table><thead><tr>'+hh+'</tr></thead><tbody>'+rows+'</tbody></table></div>';$$('#monthWrap .cell').forEach(b=>b.onclick=()=>{let k=b.dataset.k,h=b.dataset.h;S.comp[k]=S.comp[k]||{};S.comp[k][h]=!S.comp[k][h];save();render()})}
+function today(){let t=dk(new Date()),items=[...S.habits.map(h=>({id:h.id,title:h.title,sub:h.category,done:!!S.comp[t]?.[h.id],type:'h'})),...(S.tasks[t]||[]).map(x=>({id:x.id,title:x.title,sub:'доп. задача',done:x.done,type:'t'}))];$('#todayList').innerHTML=items.map(x=>'<div class="todayitem"><button class="check '+(x.done?'on':'')+'" data-i="'+x.id+'" data-t="'+x.type+'"></button><div><strong>'+esc(x.title)+'</strong><span>'+esc(x.sub)+'</span></div>'+(x.type==='t'?'<button class="delete" data-del="'+x.id+'">Удалить</button>':'<span>привычка</span>')+'</div>').join('');$$('#todayList .check').forEach(b=>b.onclick=()=>{if(b.dataset.t==='h')S.comp[t][b.dataset.i]=!S.comp[t][b.dataset.i];else{let x=S.tasks[t].find(z=>z.id===b.dataset.i);if(x)x.done=!x.done}save();render()});$$('#todayList [data-del]').forEach(b=>b.onclick=()=>{S.tasks[t]=S.tasks[t].filter(x=>x.id!==b.dataset.del);save();render()})}
+function metrics(){let[y,m]=S.month.split('-').map(Number),days=dim(y,m-1),done=0,total=days*S.habits.length;for(let d=1;d<=days;d++){let k=dk(new Date(y,m-1,d));S.habits.forEach(h=>{if(S.comp[k]?.[h.id])done++})}let p=total?Math.round(done/total*100):0;$('#ring').innerHTML=ring(p);$('#monthPct').textContent=p+'%';$('#monthMeta').textContent=done+' из '+total+' выполнено';$('#habitCount').textContent=S.habits.length;let t=dk(new Date()),td=S.habits.filter(h=>S.comp[t]?.[h.id]).length,tt=S.habits.length,tp=tt?Math.round(td/tt*100):0;$('#todayDone').textContent=td;$('#todayTotal').textContent=tt;$('#miniDone').textContent=td;$('#miniTotal').textContent=tt;$('#todayBar').style.width=tp+'%';$('#miniBar').style.width=tp+'%';$('#todayText').textContent=tp>=80?'Отличный темп.':tp>=40?'Нормально идёшь.':'Пока разогрев.';$('#streak').textContent=streak();$('#best').textContent=best();$('#focusText').textContent=focus()}
+function ring(p){let r=40,c=2*Math.PI*r,o=c-c*p/100;return'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="12"></circle><circle cx="50" cy="50" r="40" fill="none" stroke="#8bd3c7" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+o+'" transform="rotate(-90 50 50)"></circle><text x="50" y="55" text-anchor="middle" font-size="24" fill="white" font-weight="700">'+p+'%</text></svg>'}function streak(){let c=0,d=new Date();while(true){let k=dk(d),ok=S.habits.some(h=>S.comp[k]?.[h.id]);if(!ok)break;c++;d.setDate(d.getDate()-1)}return c}function best(){let keys=Object.keys(S.comp).sort(),best=0,c=0,prev=null;keys.forEach(k=>{let[y,m,d]=k.split('-').map(Number),dt=new Date(y,m-1,d),ok=S.habits.some(h=>S.comp[k]?.[h.id]);if(!ok){c=0;prev=dt;return}if(prev){let ex=new Date(prev);ex.setDate(ex.getDate()+1);c=dk(ex)===k?c+1:1}else c=1;best=Math.max(best,c);prev=dt});return best}
+function rank(){let[y,m]=S.month.split('-').map(Number),days=dim(y,m-1),top=S.habits.map(h=>{let d=0;for(let i=1;i<=days;i++)if(S.comp[dk(new Date(y,m-1,i))]?.[h.id])d++;return{...h,p:Math.round(d/days*100)}}).sort((a,b)=>b.p-a.p).slice(0,3);$('#rank').innerHTML=top.map((h,i)=>'<div class="rankrow"><div class="badge" style="background:'+h.color+'">'+(i+1)+'</div><div><div>'+esc(h.title)+'</div><div class="sub">'+esc(h.category)+'</div></div><strong>'+h.p+'%</strong></div>').join('')}function focus(){let c={};S.habits.forEach(h=>c[h.category]=(c[h.category]||0)+1);let x=Object.entries(c).sort((a,b)=>b[1]-a[1])[0],m={'Здоровье':'Больше движения и заботы о теле.','Развитие':'Рост через регулярность.','Осознанность':'Меньше хаоса, больше фокуса.','Питание':'Собираем базу через питание.','Работа':'Система должна работать на тебя.'};return x?m[x[0]]:'Стабильность лучше идеальности.'}
+function drawCharts(){let[y,m]=S.month.split('-').map(Number),days=dim(y,m-1),labels=Array.from({length:days},(_,i)=>i+1),fact=labels.map(d=>{let k=dk(new Date(y,m-1,d));return Math.round(S.habits.filter(h=>S.comp[k]?.[h.id]).length/Math.max(1,S.habits.length)*100)}),weeks=[];for(let s=1;s<=days;s+=7){let d=0,t=0;for(let i=s;i<=Math.min(days,s+6);i++){let k=dk(new Date(y,m-1,i));S.habits.forEach(h=>{t++;if(S.comp[k]?.[h.id])d++})}weeks.push(Math.round(d/t*100))}let cats={};S.habits.forEach(h=>cats[h.category]=(cats[h.category]||0)+1);let wd=Array.from({length:7},()=>({d:0,t:0}));Object.keys(S.comp).forEach(k=>{let[y,m,d]=k.split('-').map(Number),i=(new Date(y,m-1,d).getDay()+6)%7;S.habits.forEach(h=>{wd[i].t++;if(S.comp[k]?.[h.id])wd[i].d++})});Object.values(charts).forEach(c=>c.destroy());Chart.defaults.color='#aeb5bf';Chart.defaults.borderColor='rgba(255,255,255,.06)';charts.trend=new Chart($('#trendChart'),{type:'line',data:{labels,datasets:[{data:fact,borderColor:'#8bd3c7',backgroundColor:'rgba(139,211,199,.18)',fill:true,tension:.38,pointRadius:0,borderWidth:2.5}]},options:opts()});charts.week=new Chart($('#weekChart'),{type:'bar',data:{labels:weeks.map((_,i)=>'Нед '+(i+1)),datasets:[{data:weeks,backgroundColor:C,borderRadius:9}]},options:opts()});charts.cat=new Chart($('#catChart'),{type:'doughnut',data:{labels:Object.keys(cats),datasets:[{data:Object.values(cats),backgroundColor:C,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false}}}});$('#legend').innerHTML=Object.entries(cats).map(([n,v],i)=>'<div class="legendrow"><div class="legendlabel"><span class="dot" style="background:'+C[i%C.length]+'"></span>'+esc(n)+'</div><strong>'+v+'</strong></div>').join('');charts.day=new Chart($('#dayChart'),{type:'bar',data:{labels:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],datasets:[{data:wd.map(x=>x.t?Math.round(x.d/x.t*100):0),backgroundColor:C,borderRadius:9}]},options:opts()})}function opts(){return{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.06)'}},x:{grid:{display:false}}},plugins:{legend:{display:false},tooltip:{displayColors:false}}}}
+function openManage(){manager();$('#manageOverlay').classList.add('open')}function manager(){$('#manager').innerHTML=S.habits.map(h=>'<div class="manageitem soft" data-id="'+h.id+'"><input class="mn" value="'+esc(h.title)+'"><select class="mc">'+['Здоровье','Развитие','Осознанность','Питание','Работа'].map(x=>'<option '+(x===h.category?'selected':'')+'>'+x+'</option>').join('')+'</select><button class="delete" data-del="'+h.id+'">Удалить</button></div>').join('');$$('#manager [data-del]').forEach(b=>b.onclick=()=>{let h=b.dataset.del;S.habits=S.habits.filter(x=>x.id!==h);Object.keys(S.comp).forEach(k=>delete S.comp[k][h]);save();manager();render()})}function createHabit(){let n=$('#newName').value.trim();if(!n)return;S.habits.push({id:id(),title:n,category:$('#newCat').value,color:C[S.habits.length%C.length]});$('#newName').value='';sync();save();manager();render()}function saveManage(){S.habits=[...$$('#manager .manageitem')].map((n,i)=>{let old=S.habits.find(h=>h.id===n.dataset.id)||{id:n.dataset.id,color:C[i%C.length]};return{...old,title:n.querySelector('.mn').value.trim()||('Привычка '+(i+1)),category:n.querySelector('.mc').value}});sync();save();closeAll();render()}function sync(){Object.keys(S.comp).forEach(k=>S.habits.forEach(h=>{if(typeof S.comp[k][h.id]!=='boolean')S.comp[k][h.id]=false}));ensure()}function addTask(){let n=$('#taskName').value.trim();if(!n)return;let t=dk(new Date());S.tasks[t].push({id:id(),title:n,done:false});$('#taskName').value='';save();closeAll();render()}function closeAll(){$$('.overlay').forEach(x=>x.classList.remove('open'))}
+</script>
+</body></html>
