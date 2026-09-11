@@ -3,33 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#16181c" />
-  <title>Трекер привычек — Desktop</title>
+  <meta name="theme-color" content="#111315" />
+  <title>Daily Flow — Habit Tracker</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app-bg"></div>
+  <div class="ambient ambient-1"></div>
+  <div class="ambient ambient-2"></div>
+  <div class="ambient ambient-3"></div>
+  <div class="ambient ambient-4"></div>
+
   <div class="app-shell">
     <aside class="sidebar glass-panel">
-      <div class="brand-mini">
-        <div class="brand-mark">DF</div>
-        <div>
-          <div class="brand-name">Daily Flow</div>
-          <div class="brand-sub">habit dashboard</div>
+      <div>
+        <div class="brand-block">
+          <div class="brand-logo">DF</div>
+          <div>
+            <div class="brand-title">Daily Flow</div>
+            <div class="brand-subtitle">desktop tracker</div>
+          </div>
         </div>
+
+        <nav class="side-nav" id="sideNav">
+          <button class="nav-item is-active" data-view="overview"><span>⌂</span><span>Главная</span></button>
+          <button class="nav-item" data-view="habits"><span>◎</span><span>Привычки</span></button>
+          <button class="nav-item" data-view="analytics"><span>◫</span><span>Аналитика</span></button>
+          <button class="nav-item" data-view="plan"><span>☷</span><span>План</span></button>
+          <button class="nav-item" data-view="archive"><span>◌</span><span>Архив</span></button>
+          <button class="nav-item" id="openHabitManagerNav"><span>⚙</span><span>Настройки</span></button>
+        </nav>
       </div>
 
-      <nav class="side-nav">
-        <button class="nav-item is-active"><span>⌂</span> Главная</button>
-        <button class="nav-item"><span>◎</span> Привычки</button>
-        <button class="nav-item"><span>◫</span> Аналитика</button>
-        <button class="nav-item"><span>☷</span> План</button>
-        <button class="nav-item"><span>✎</span> Заметки</button>
-        <button class="nav-item"><span>⚙</span> Настройки</button>
-      </nav>
-
-      <div class="sidebar-quote glass-soft">
-        <p>«Маленькие шаги каждый день приводят к большим результатам»</p>
+      <div class="sidebar-bottom glass-soft">
+        <div class="eyebrow">Фраза дня</div>
+        <p>Дисциплина — это не наказание, а способ собрать жизнь в нормальную систему.</p>
       </div>
     </aside>
 
@@ -37,185 +44,321 @@
       <header class="topbar glass-panel">
         <div>
           <h1>Трекер привычек</h1>
-          <p class="header-sub">Дисциплина без унылой таблицы Excel. Наконец-то.</p>
+          <p class="header-sub">Glassmorphism, monthly tracking, daily focus and analytics — наконец как у людей.</p>
         </div>
 
-        <div class="topbar-center">
-          <button class="tab-pill is-active">Обзор</button>
-          <button class="tab-pill">Привычки</button>
-          <button class="tab-pill">Аналитика</button>
-          <button class="tab-pill">План</button>
-          <button class="tab-pill">Архив</button>
+        <div class="topbar-center" id="topTabs">
+          <button class="tab-pill is-active" data-view="overview">Обзор</button>
+          <button class="tab-pill" data-view="habits">Привычки</button>
+          <button class="tab-pill" data-view="analytics">Аналитика</button>
+          <button class="tab-pill" data-view="plan">План</button>
+          <button class="tab-pill" data-view="archive">Архив</button>
         </div>
 
         <div class="topbar-right">
           <div class="search-box glass-soft">
             <span>⌕</span>
-            <input type="text" placeholder="Поиск..." aria-label="Поиск" />
+            <input type="text" id="habitSearch" placeholder="Поиск привычек..." aria-label="Поиск привычек" />
           </div>
           <div class="header-date" id="headerDate"></div>
           <button class="icon-circle" id="openHabitManager" title="Управление привычками">✦</button>
         </div>
       </header>
 
-      <section class="hero-grid">
-        <article class="clock-card glass-panel">
-          <div class="clock-wrap">
-            <div class="flip-clock" aria-label="Текущее время">
-              <div class="flip-group">
-                <div class="flip-card"><span id="hourTens">0</span></div>
-                <div class="flip-card"><span id="hourOnes">0</span></div>
+      <div class="pane-stack">
+        <section class="pane is-active" data-pane="overview">
+          <section class="hero-grid">
+            <article class="clock-card glass-panel">
+              <div class="clock-wrap">
+                <div class="flip-clock">
+                  <div class="flip-group">
+                    <div class="flip-card"><span id="hourTens">0</span></div>
+                    <div class="flip-card"><span id="hourOnes">0</span></div>
+                  </div>
+                  <div class="flip-divider"></div>
+                  <div class="flip-group">
+                    <div class="flip-card"><span id="minuteTens">0</span></div>
+                    <div class="flip-card"><span id="minuteOnes">0</span></div>
+                  </div>
+                </div>
+                <div class="clock-copy">
+                  <p class="eyebrow">Сейчас</p>
+                  <div class="clock-date" id="clockDate"></div>
+                  <p class="clock-note">Сделай хотя бы базу. И день уже не провален.</p>
+                </div>
               </div>
-              <div class="flip-divider"></div>
-              <div class="flip-group">
-                <div class="flip-card"><span id="minuteTens">0</span></div>
-                <div class="flip-card"><span id="minuteOnes">0</span></div>
+            </article>
+
+            <article class="metric-card glass-panel">
+              <p class="eyebrow">Общий прогресс</p>
+              <div class="metric-body">
+                <div class="ring-stat" id="overallRing"></div>
+                <div>
+                  <div class="metric-number" id="overallPercent">0%</div>
+                  <p class="metric-foot" id="overallMeta">0 из 0 выполнено</p>
+                </div>
               </div>
-            </div>
-            <div class="clock-copy">
-              <p class="eyebrow">Сейчас</p>
-              <div class="clock-date" id="clockDate"></div>
-              <p class="clock-note">Сегодня — ещё один шанс сделать день не бессмысленным.</p>
-            </div>
-          </div>
-        </article>
+            </article>
 
-        <article class="metric-card glass-panel">
-          <p class="eyebrow">Общий прогресс</p>
-          <div class="metric-body">
-            <div class="ring-stat" id="overallRing"></div>
-            <div>
-              <div class="metric-number" id="overallPercent">0%</div>
-              <p class="metric-foot" id="overallMeta">0 из 0 выполнено</p>
-            </div>
-          </div>
-        </article>
+            <article class="metric-card glass-panel">
+              <p class="eyebrow">Текущая серия</p>
+              <div class="metric-number"><span id="streakValue">0</span> <small>дней</small></div>
+              <p class="metric-foot">Лучшая серия: <span id="bestStreakValue">0</span> дней</p>
+            </article>
 
-        <article class="metric-card glass-panel">
-          <p class="eyebrow">Текущая серия</p>
-          <div class="metric-number"><span id="streakValue">0</span> <small>дней</small></div>
-          <p class="metric-foot">Лучшая серия: <span id="bestStreakValue">0</span> дней</p>
-        </article>
+            <article class="metric-card glass-panel">
+              <p class="eyebrow">Привычек в системе</p>
+              <div class="metric-number"><span id="habitCount">0</span></div>
+              <p class="metric-foot">Можно редактировать и добавлять</p>
+            </article>
 
-        <article class="metric-card glass-panel">
-          <p class="eyebrow">Привычки в трекере</p>
-          <div class="metric-number"><span id="habitCount">0</span></div>
-          <p class="metric-foot">Активных привычек</p>
-        </article>
+            <article class="metric-card glass-panel">
+              <p class="eyebrow">Сегодня выполнено</p>
+              <div class="metric-number"><span id="todayDoneCount">0</span><small> / <span id="todayTotalCount">0</span></small></div>
+              <div class="progress-inline"><div id="todayBar"></div></div>
+              <p class="metric-foot" id="todayCompletionCopy">Пока тихо.</p>
+            </article>
 
-        <article class="metric-card glass-panel">
-          <p class="eyebrow">Выполнено сегодня</p>
-          <div class="metric-number"><span id="todayDoneCount">0</span><small> / <span id="todayTotalCount">0</span></small></div>
-          <div class="progress-inline"><div id="todayBar"></div></div>
-          <p class="metric-foot" id="todayCompletionCopy">Пока тихо.</p>
-        </article>
+            <article class="quote-card glass-panel">
+              <div class="quote-image"></div>
+              <div class="quote-content">
+                <p class="eyebrow">Фокус</p>
+                <blockquote>«Смотри на динамику, а не на идеальный результат»</blockquote>
+              </div>
+            </article>
+          </section>
 
-        <article class="quote-card glass-panel">
-          <div class="quote-image"></div>
-          <blockquote>«Дисциплина — это забота о себе в будущем»</blockquote>
-        </article>
-      </section>
+          <section class="main-grid">
+            <article class="month-panel glass-panel">
+              <div class="panel-head">
+                <div>
+                  <h2 id="monthPanelTitle">Трекер</h2>
+                  <p class="panel-sub">Отмечай выполнение за весь месяц</p>
+                </div>
+                <div class="panel-actions">
+                  <button class="ghost-btn" id="prevMonthBtn">←</button>
+                  <button class="ghost-btn" id="nextMonthBtn">→</button>
+                  <button class="ghost-btn" id="jumpTodayBtn">Сегодня</button>
+                </div>
+              </div>
+              <div class="month-grid-wrap" id="monthGridWrap"></div>
+              <div class="month-panel-footer">
+                <button class="add-btn" id="openHabitManagerBottom">＋ Добавить / изменить привычки</button>
+                <span id="monthSummaryLabel">0 привычек</span>
+              </div>
+            </article>
 
-      <section class="main-grid">
-        <article class="month-panel glass-panel">
-          <div class="panel-head">
-            <div>
-              <h2 id="monthPanelTitle">Трекер</h2>
-              <p class="panel-sub">Отмечай выполнение за весь месяц</p>
-            </div>
-            <div class="panel-actions">
-              <button class="ghost-btn" id="prevMonthBtn">←</button>
-              <button class="ghost-btn" id="nextMonthBtn">→</button>
-              <button class="ghost-btn" id="jumpTodayBtn">Сегодня</button>
-            </div>
-          </div>
-          <div class="month-grid-wrap" id="monthGridWrap"></div>
-          <div class="month-panel-footer">
-            <button class="add-btn" id="openHabitManagerBottom">＋ Добавить / изменить привычки</button>
-            <span id="monthSummaryLabel">0 привычек</span>
-          </div>
-        </article>
+            <article class="today-panel glass-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Сегодня</h2>
+                  <p class="panel-sub" id="todayTitleDate"></p>
+                </div>
+                <button class="ghost-btn" id="addDailyTaskBtn">＋ Добавить задачу</button>
+              </div>
 
-        <article class="today-panel glass-panel">
-          <div class="panel-head">
-            <div>
-              <h2>Сегодня</h2>
-              <p class="panel-sub" id="todayTitleDate"></p>
-            </div>
-            <button class="ghost-btn" id="addDailyTaskBtn">＋ Добавить задачу</button>
-          </div>
+              <div class="today-overview">
+                <div class="today-mini-progress"><span id="todayMiniDone">0</span> из <span id="todayMiniTotal">0</span> выполнено</div>
+                <div class="progress-inline"><div id="todayMiniBar"></div></div>
+              </div>
 
-          <div class="today-overview">
-            <div class="today-mini-progress"><span id="todayMiniDone">0</span> из <span id="todayMiniTotal">0</span> выполнено</div>
-            <div class="progress-inline"><div id="todayMiniBar"></div></div>
-          </div>
+              <div class="today-list" id="todayList"></div>
+            </article>
 
-          <div class="today-list" id="todayList"></div>
-        </article>
+            <article class="stats-panel glass-panel">
+              <div class="panel-head compact">
+                <div>
+                  <h2>Статистика</h2>
+                  <p class="panel-sub">Лучшие привычки и общий фокус</p>
+                </div>
+              </div>
+              <div class="top-habits" id="topHabitsList"></div>
+              <div class="focus-card glass-soft">
+                <div class="target-icon">◎</div>
+                <div>
+                  <p class="focus-title">Фокус месяца</p>
+                  <p class="focus-text" id="focusText">Стабильность лучше идеальности.</p>
+                </div>
+              </div>
+              <div class="small-quote glass-soft" id="insightText">Маленький прогресс — всё ещё прогресс.</div>
+            </article>
+          </section>
 
-        <article class="stats-panel glass-panel">
-          <div class="panel-head compact">
-            <div>
-              <h2>Статистика</h2>
-              <p class="panel-sub">Лучшие привычки и фокус</p>
-            </div>
-          </div>
-          <div class="top-habits" id="topHabitsList"></div>
-          <div class="focus-card glass-soft">
-            <div class="target-icon">◎</div>
-            <div>
-              <p class="focus-title">Фокус месяца</p>
-              <p class="focus-text" id="focusText">Стабильность лучше идеальности.</p>
-            </div>
-          </div>
-          <div class="small-quote glass-soft">«Привычки меняют не день, а всю жизнь»</div>
-        </article>
-      </section>
+          <section class="charts-grid">
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact">
+                <div>
+                  <h2>Динамика выполнения</h2>
+                  <p class="panel-sub">План vs факт по дням</p>
+                </div>
+              </div>
+              <div id="trendChart" class="chart-svg"></div>
+            </article>
 
-      <section class="charts-grid">
-        <article class="chart-panel glass-panel">
-          <div class="panel-head compact">
-            <div>
-              <h2>Динамика выполнения</h2>
-              <p class="panel-sub">План vs факт по дням</p>
-            </div>
-          </div>
-          <div id="trendChart" class="chart-svg"></div>
-        </article>
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact">
+                <div>
+                  <h2>Успех по неделям</h2>
+                  <p class="panel-sub">Доля выполнения</p>
+                </div>
+              </div>
+              <div id="weeklyChart" class="chart-svg"></div>
+            </article>
 
-        <article class="chart-panel glass-panel">
-          <div class="panel-head compact">
-            <div>
-              <h2>Успех по неделям</h2>
-              <p class="panel-sub">Доля выполнения</p>
-            </div>
-          </div>
-          <div id="weeklyChart" class="chart-svg"></div>
-        </article>
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact">
+                <div>
+                  <h2>Распределение по категориям</h2>
+                  <p class="panel-sub">Структура привычек</p>
+                </div>
+              </div>
+              <div class="donut-layout">
+                <div id="categoryDonut"></div>
+                <div id="categoryLegend" class="category-legend"></div>
+              </div>
+            </article>
 
-        <article class="chart-panel glass-panel">
-          <div class="panel-head compact">
-            <div>
-              <h2>Распределение по категориям</h2>
-              <p class="panel-sub">Структура привычек</p>
-            </div>
-          </div>
-          <div class="donut-layout">
-            <div id="categoryDonut"></div>
-            <div id="categoryLegend" class="category-legend"></div>
-          </div>
-        </article>
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact">
+                <div>
+                  <h2>Активность по дням недели</h2>
+                  <p class="panel-sub">Средняя успешность</p>
+                </div>
+              </div>
+              <div id="weekdayChart" class="chart-svg"></div>
+            </article>
+          </section>
+        </section>
 
-        <article class="chart-panel glass-panel">
-          <div class="panel-head compact">
-            <div>
-              <h2>Активность по дням недели</h2>
-              <p class="panel-sub">Средняя успешность</p>
-            </div>
-          </div>
-          <div id="weekdayChart" class="chart-svg"></div>
-        </article>
-      </section>
+        <section class="pane" data-pane="habits">
+          <section class="sub-grid two-col">
+            <article class="feature-panel glass-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Библиотека привычек</h2>
+                  <p class="panel-sub">Добавляй, переименовывай и настраивай категории</p>
+                </div>
+                <button class="add-btn" id="openHabitManagerInline">Открыть менеджер</button>
+              </div>
+              <div class="habit-library" id="habitLibrary"></div>
+            </article>
+
+            <article class="feature-panel glass-panel">
+              <div class="panel-head compact">
+                <div>
+                  <h2>Категории</h2>
+                  <p class="panel-sub">Как распределены твои привычки</p>
+                </div>
+              </div>
+              <div class="category-cards" id="categoryCards"></div>
+            </article>
+          </section>
+
+          <section class="sub-grid">
+            <article class="feature-panel glass-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Месячная матрица</h2>
+                  <p class="panel-sub">Та же сетка, но здесь акцент только на привычках</p>
+                </div>
+                <div class="panel-actions">
+                  <button class="ghost-btn" id="prevMonthBtnHabits">←</button>
+                  <button class="ghost-btn" id="nextMonthBtnHabits">→</button>
+                </div>
+              </div>
+              <div class="month-grid-wrap" id="monthGridWrapHabits"></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="pane" data-pane="analytics">
+          <section class="analytics-summary-grid">
+            <article class="metric-card glass-panel short">
+              <p class="eyebrow">Средний % месяца</p>
+              <div class="metric-number" id="analyticsMonthPercent">0%</div>
+            </article>
+            <article class="metric-card glass-panel short">
+              <p class="eyebrow">Сильнейшая привычка</p>
+              <div class="metric-name" id="analyticsTopHabit">—</div>
+            </article>
+            <article class="metric-card glass-panel short">
+              <p class="eyebrow">Самый слабый день недели</p>
+              <div class="metric-name" id="analyticsWeakDay">—</div>
+            </article>
+            <article class="metric-card glass-panel short">
+              <p class="eyebrow">Рекомендация</p>
+              <div class="metric-copy" id="analyticsAdvice">—</div>
+            </article>
+          </section>
+
+          <section class="charts-grid charts-grid-analytics">
+            <article class="chart-panel glass-panel wide-two">
+              <div class="panel-head compact"><div><h2>Тренд месяца</h2><p class="panel-sub">Полная картина по дням</p></div></div>
+              <div id="trendChartAnalytics" class="chart-svg tall"></div>
+            </article>
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact"><div><h2>По неделям</h2><p class="panel-sub">Ритм выполнения</p></div></div>
+              <div id="weeklyChartAnalytics" class="chart-svg tall"></div>
+            </article>
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact"><div><h2>По категориям</h2><p class="panel-sub">Где сосредоточен фокус</p></div></div>
+              <div class="donut-layout tall"><div id="categoryDonutAnalytics"></div><div id="categoryLegendAnalytics" class="category-legend"></div></div>
+            </article>
+            <article class="chart-panel glass-panel wide-two">
+              <div class="panel-head compact"><div><h2>По дням недели</h2><p class="panel-sub">Когда провалы случаются чаще</p></div></div>
+              <div id="weekdayChartAnalytics" class="chart-svg tall"></div>
+            </article>
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact"><div><h2>Топ-3</h2><p class="panel-sub">Лучшие привычки месяца</p></div></div>
+              <div class="top-habits large" id="topHabitsListAnalytics"></div>
+            </article>
+            <article class="chart-panel glass-panel">
+              <div class="panel-head compact"><div><h2>Вывод</h2><p class="panel-sub">Коротко и по делу</p></div></div>
+              <div class="insight-stack" id="analyticsInsights"></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="pane" data-pane="plan">
+          <section class="sub-grid three-col">
+            <article class="feature-panel glass-panel">
+              <div class="panel-head compact"><div><h2>План на день</h2><p class="panel-sub">То, что важно закрыть сегодня</p></div></div>
+              <div class="daily-focus-card glass-soft">
+                <div class="focus-title-line">Сегодняшний фокус</div>
+                <div class="focus-big" id="dayFocusText">Закрыть базовые привычки и одну ключевую задачу.</div>
+              </div>
+              <div class="today-list compact-list" id="planTodayList"></div>
+            </article>
+
+            <article class="feature-panel glass-panel">
+              <div class="panel-head compact"><div><h2>План недели</h2><p class="panel-sub">Минимум, который нужно удержать</p></div></div>
+              <div class="note-card glass-soft">
+                <div class="note-title">Фокус недели</div>
+                <textarea id="weekFocusInput" class="note-input" placeholder="Напиши главный фокус недели"></textarea>
+              </div>
+              <div class="plan-pills" id="weekPills"></div>
+            </article>
+
+            <article class="feature-panel glass-panel">
+              <div class="panel-head compact"><div><h2>Ритм дня</h2><p class="panel-sub">Опорное расписание</p></div></div>
+              <div class="routine-list" id="routineList"></div>
+            </article>
+          </section>
+        </section>
+
+        <section class="pane" data-pane="archive">
+          <section class="sub-grid two-col">
+            <article class="feature-panel glass-panel">
+              <div class="panel-head compact"><div><h2>Месячные срезы</h2><p class="panel-sub">Быстрый архив прогресса по месяцам</p></div></div>
+              <div class="archive-cards" id="archiveCards"></div>
+            </article>
+            <article class="feature-panel glass-panel">
+              <div class="panel-head compact"><div><h2>Краткая история</h2><p class="panel-sub">На что смотреть в архиве</p></div></div>
+              <div class="insight-stack" id="archiveInsights"></div>
+            </article>
+          </section>
+        </section>
+      </div>
     </main>
   </div>
 
