@@ -1,1 +1,0 @@
-binary assets are committed through Git data
