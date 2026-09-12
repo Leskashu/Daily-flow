@@ -65,7 +65,7 @@ const archiveInsights = document.getElementById('archiveInsights');
 const weekFocusInput = document.getElementById('weekFocusInput');
 const weekPills = document.getElementById('weekPills');
 const routineList = document.getElementById('routineList');
-const dayFocusText = document.getElementById('dayFocusText');
+const dayFocusInput = document.getElementById('dayFocusInput');
 const habitSearch = document.getElementById('habitSearch');
 
 const state = loadState();
@@ -101,6 +101,10 @@ function bindEvents() {
 
   weekFocusInput.addEventListener('input', () => {
     state.weekFocus = weekFocusInput.value;
+    saveState();
+  });
+  dayFocusInput.addEventListener('input', () => {
+    state.dayFocus = dayFocusInput.value;
     saveState();
   });
 
@@ -165,7 +169,8 @@ function makeDefaultState() {
     completions,
     customTasks,
     weekFocus: 'Удержать базовый ритм без перегруза.',
-    dayFocus: 'Закрыть базовые привычки и одну ключевую задачу.'
+    dayFocus: 'Закрыть базовые привычки и одну ключевую задачу.',
+    routine: routineTemplate.map(([time, text]) => ({ time, text }))
   };
 }
 
@@ -173,6 +178,9 @@ function ensureStructures() {
   const today = dateKey(new Date());
   if (!state.completions[today]) state.completions[today] = {};
   if (!state.customTasks[today]) state.customTasks[today] = [];
+  if (!Array.isArray(state.routine) || !state.routine.length) {
+    state.routine = routineTemplate.map(([time, text]) => ({ time, text }));
+  }
   state.habits.forEach(habit => {
     if (typeof state.completions[today][habit.id] !== 'boolean') {
       state.completions[today][habit.id] = false;
@@ -306,32 +314,8 @@ function renderMonthGrid(target, compactTitle) {
   const empty = filteredHabits().length ? '' : '<div class="small-quote glass-soft">Ничего не найдено. Попробуй другой запрос в поиске.</div>';
   target.innerHTML = empty || `<div class="month-grid"><table><thead><tr>${headerCells}</tr></thead><tbody>${rows}</tbody></table></div>`;
   target.querySelectorAll('.day-cell').forEach(btn => btn.addEventListener('click', toggleMonthCell));
-  bindMonthGridSnap(target);
 }
 
-
-function bindMonthGridSnap(target) {
-  if (target.dataset.snapBound === 'true') return;
-  target.dataset.snapBound = 'true';
-  let settleTimer;
-
-  const snapToCell = () => {
-    const cells = target.querySelectorAll('.day-cell');
-    if (cells.length < 2 || target.scrollWidth <= target.clientWidth) return;
-    const step = cells[1].getBoundingClientRect().left - cells[0].getBoundingClientRect().left;
-    if (!Number.isFinite(step) || step <= 0) return;
-    const aligned = Math.round(target.scrollLeft / step) * step;
-    if (Math.abs(target.scrollLeft - aligned) > 1) {
-      target.scrollTo({ left: aligned, behavior: 'smooth' });
-    }
-  };
-
-  target.addEventListener('scroll', () => {
-    window.clearTimeout(settleTimer);
-    settleTimer = window.setTimeout(snapToCell, 90);
-  }, { passive: true });
-  target.addEventListener('scrollend', snapToCell);
-}
 
 function toggleMonthCell(e) {
   const { habitId, date } = e.currentTarget.dataset;
@@ -746,18 +730,27 @@ function buildAdvice(stats, weakestDayPercent) {
 
 function renderPlan() {
   weekFocusInput.value = state.weekFocus || '';
-  dayFocusText.textContent = state.dayFocus || 'Закрыть базовые привычки и одну ключевую задачу.';
+  dayFocusInput.value = state.dayFocus || 'Закрыть базовые привычки и одну ключевую задачу.';
   weekPills.innerHTML = [
     'Закрыть базовые привычки',
     'Не срываться из-за одного плохого дня',
     'Оставить время на отдых',
     'Дойти до конца недели без хаоса'
   ].map(item => `<span>• ${item}</span>`).join('');
-  routineList.innerHTML = routineTemplate.map(([time, text]) => `
-    <div class="routine-row">
-      <div class="routine-time">${time}</div>
-      <div>${text}</div>
+  const routine = state.routine || routineTemplate.map(([time, text]) => ({ time, text }));
+  routineList.innerHTML = routine.map((item, index) => `
+    <div class="routine-row routine-row-editable">
+      <input class="routine-time-input" type="time" value="${escapeHtml(item.time)}" aria-label="Время пункта ${index + 1}">
+      <input class="routine-text-input" type="text" value="${escapeHtml(item.text)}" aria-label="Описание пункта ${index + 1}">
     </div>`).join('');
+  routineList.querySelectorAll('.routine-time-input').forEach((input, index) => input.addEventListener('input', () => {
+    state.routine[index].time = input.value;
+    saveState();
+  }));
+  routineList.querySelectorAll('.routine-text-input').forEach((input, index) => input.addEventListener('input', () => {
+    state.routine[index].text = input.value;
+    saveState();
+  }));
 }
 
 function renderArchive() {
