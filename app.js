@@ -279,7 +279,7 @@ function renderMonthGrid(target, compactTitle) {
       const done = !!state.completions[key]?.[habit.id];
       if (done) doneCount++;
       const isToday = key === todayKey;
-      dayCells += `<td><button class="day-cell ${isToday ? 'today-outline' : ''}" style="background:${done ? habit.color : 'rgba(255,255,255,0.04)'}" data-habit-id="${habit.id}" data-date="${key}" aria-label="${escapeHtml(habit.title)} ${d}"></button></td>`;
+      dayCells += `<td><button class="day-cell ${done ? 'is-done' : ''} ${isToday ? 'today-outline' : ''}" style="background:${done ? habit.color : 'rgba(255,255,255,0.04)'}" data-habit-id="${habit.id}" data-date="${key}" aria-label="${escapeHtml(habit.title)} ${d}"></button></td>`;
     }
     const percent = Math.round((doneCount / days) * 100);
     return `
@@ -346,6 +346,7 @@ function renderTodayList(target, includeDeleteButton) {
 function toggleTodayItem(e) {
   const { id, type } = e.currentTarget.dataset;
   const today = dateKey(new Date());
+  if (!state.completions[today]) state.completions[today] = {};
   if (type === 'habit') {
     state.completions[today][id] = !state.completions[today][id];
   } else {
