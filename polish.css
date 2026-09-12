@@ -433,3 +433,144 @@ body::before {
   .tab-pill { padding: 8px 10px !important; }
   .hero-grid .metric-card { min-height: 106px !important; }
 }
+
+
+/* Strict phone canvas: all regular UI is designed for a 390 px-wide app. */
+@media (max-width: 820px) {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { width: 100%; min-width: 0 !important; overflow-x: hidden !important; }
+  body { font-size: 12px !important; }
+
+  .app-shell {
+    width: 100% !important;
+    max-width: 390px !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: calc(9px + env(safe-area-inset-top)) 10px calc(22px + env(safe-area-inset-bottom)) !important;
+  }
+  .dashboard, .pane-stack, .pane { width: 100% !important; min-width: 0 !important; }
+  .dashboard { gap: 10px !important; }
+
+  .topbar {
+    grid-template-columns: minmax(0, 1fr) 36px !important;
+    grid-template-areas: "title actions" "tabs tabs" !important;
+    width: 100% !important;
+    padding: 12px !important;
+    gap: 8px !important;
+    border-radius: 24px !important;
+  }
+  .topbar h1 { font-size: 17px !important; line-height: 1.05 !important; }
+  .topbar .icon-circle { width: 36px !important; height: 36px !important; flex-basis: 36px !important; }
+  .topbar-center { max-width: 100% !important; padding-top: 2px !important; }
+  .tab-pill { padding: 8px 10px !important; font-size: 10px !important; }
+  .header-sub, .header-date, .search-box { display: none !important; }
+
+  .pane[data-pane="overview"].is-active {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: start !important;
+    gap: 10px !important;
+  }
+  .pane[data-pane="overview"] > .hero-grid,
+  .pane[data-pane="overview"] > .main-grid { display: contents !important; }
+
+  .clock-card, .quote-card { display: none !important; }
+  .hero-grid .metric-card {
+    display: flex !important;
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important;
+    padding: 13px !important;
+    border-radius: 22px !important;
+  }
+  .metric-card .eyebrow { font-size: 9px !important; line-height: 1.15 !important; letter-spacing: .09em !important; }
+  .metric-card .metric-body { gap: 6px !important; align-items: center !important; }
+  .metric-number { font-size: 26px !important; line-height: 1 !important; }
+  .metric-number small, .metric-name, .metric-copy { font-size: 11px !important; line-height: 1.25 !important; }
+  .metric-foot { display: block !important; margin-top: 5px !important; font-size: 10px !important; line-height: 1.22 !important; }
+  .ring-stat svg { width: 48px !important; height: 48px !important; }
+
+  .month-panel, .today-panel, .stats-panel, .charts-grid { grid-column: 1 / -1 !important; width: 100% !important; }
+  .month-panel, .today-panel, .stats-panel, .chart-panel, .feature-panel {
+    min-width: 0 !important;
+    padding: 13px !important;
+    border-radius: 23px !important;
+  }
+  .month-panel h2, .today-panel h2, .stats-panel h2, .chart-panel h2, .feature-panel h2 { font-size: 15px !important; line-height: 1.14 !important; }
+  .panel-sub { display: none !important; }
+  .panel-head, .panel-head.compact { gap: 7px !important; margin-bottom: 10px !important; }
+  .panel-actions { gap: 5px !important; flex-wrap: nowrap !important; }
+  .panel-actions .ghost-btn, .ghost-btn, .add-btn {
+    min-height: 32px !important;
+    padding: 7px 9px !important;
+    border-radius: 12px !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  #jumpTodayBtn { display: none !important; }
+
+  /* The matrix scrolls horizontally; nothing else on the page does. */
+  .month-grid-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: auto !important;
+    scrollbar-color: rgba(241,231,214,.68) rgba(12,25,21,.55) !important;
+    padding: 7px 7px 11px !important;
+    border-radius: 16px !important;
+  }
+  .month-grid-wrap::-webkit-scrollbar { display: block !important; height: 6px !important; }
+  .month-grid-wrap::-webkit-scrollbar-track { background: rgba(12,25,21,.55); border-radius: 99px; }
+  .month-grid-wrap::-webkit-scrollbar-thumb { background: rgba(232,227,209,.67); border-radius: 99px; }
+  .month-grid { min-width: 736px !important; }
+  .month-grid table { border-spacing: 0 5px !important; }
+  .month-grid th, .month-grid td { font-size: 9px !important; }
+  .month-grid .habit-head { min-width: 118px !important; max-width: 118px !important; }
+  .habit-label { gap: 5px !important; padding: 2px 4px !important; }
+  .habit-name { font-size: 9px !important; line-height: 1.1 !important; }
+  .habit-category { display: none !important; }
+  .habit-dot { width: 7px !important; height: 7px !important; }
+  .day-cell { width: 18px !important; height: 18px !important; border-radius: 6px !important; }
+  .day-cell.is-done { background: linear-gradient(135deg, #78ae9e, #c2dfcf 62%, #eee1cc) !important; }
+  .month-panel-footer { gap: 7px !important; margin-top: 9px !important; }
+  .month-panel-footer .add-btn { width: 100% !important; justify-content: center; }
+  #monthSummaryLabel { display: none !important; }
+
+  .today-panel .panel-head { align-items: center !important; }
+  .today-overview { margin-bottom: 9px !important; gap: 5px !important; }
+  .today-mini-progress { font-size: 11px !important; }
+  .progress-inline { height: 6px !important; margin-top: 4px !important; }
+  .today-list { gap: 7px !important; }
+  .today-item { grid-template-columns: 19px minmax(0,1fr) auto !important; gap: 7px !important; padding: 9px !important; border-radius: 14px !important; }
+  .today-check { width: 19px !important; height: 19px !important; }
+  .today-copy strong { font-size: 12px !important; line-height: 1.15 !important; }
+  .today-copy span, .today-item .small-note { display: none !important; }
+  .delete-task-btn { min-height: 27px !important; padding: 6px 8px !important; font-size: 9px !important; }
+
+  .stats-panel { display: grid !important; grid-template-columns: repeat(3, minmax(0,1fr)) !important; gap: 7px !important; }
+  .stats-panel > .panel-head { grid-column: 1 / -1 !important; margin-bottom: 0 !important; }
+  .stats-panel .top-habits { grid-column: 1 / -1 !important; display: grid !important; grid-template-columns: repeat(3, minmax(0,1fr)) !important; gap: 6px !important; margin: 0 !important; }
+  .top-habit-row { min-width: 0 !important; padding: 8px !important; border-radius: 13px !important; }
+  .top-habit-row .habit-name { font-size: 9px !important; }
+  .stats-panel .focus-card, .stats-panel .small-quote { min-width: 0 !important; margin: 0 !important; padding: 8px !important; border-radius: 13px !important; }
+  .stats-panel .focus-card { grid-column: span 2 !important; }
+  .target-icon { width: 27px !important; height: 27px !important; }
+  .focus-title, .focus-text, .small-quote { font-size: 9px !important; line-height: 1.23 !important; }
+
+  .charts-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .chart-svg, .chart-svg.tall { min-height: 180px !important; }
+  .donut-layout { grid-template-columns: 78px minmax(0,1fr) !important; min-height: 140px !important; }
+  .category-legend { font-size: 10px !important; }
+  .sub-grid.two-col, .sub-grid.three-col, .analytics-summary-grid { grid-template-columns: repeat(3, minmax(0,1fr)) !important; gap: 7px !important; }
+  .analytics-summary-grid .metric-card { min-height: 112px !important; padding: 10px !important; border-radius: 17px !important; }
+  .analytics-summary-grid .metric-card:last-child { grid-column: span 3 !important; min-height: 72px !important; }
+
+  .app-dialog { width: calc(100vw - 20px) !important; max-width: 370px !important; }
+  .dialog-card { padding: 14px !important; border-radius: 24px !important; }
+}
