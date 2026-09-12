@@ -306,6 +306,31 @@ function renderMonthGrid(target, compactTitle) {
   const empty = filteredHabits().length ? '' : '<div class="small-quote glass-soft">Ничего не найдено. Попробуй другой запрос в поиске.</div>';
   target.innerHTML = empty || `<div class="month-grid"><table><thead><tr>${headerCells}</tr></thead><tbody>${rows}</tbody></table></div>`;
   target.querySelectorAll('.day-cell').forEach(btn => btn.addEventListener('click', toggleMonthCell));
+  bindMonthGridSnap(target);
+}
+
+
+function bindMonthGridSnap(target) {
+  if (target.dataset.snapBound === 'true') return;
+  target.dataset.snapBound = 'true';
+  let settleTimer;
+
+  const snapToCell = () => {
+    const cells = target.querySelectorAll('.day-cell');
+    if (cells.length < 2 || target.scrollWidth <= target.clientWidth) return;
+    const step = cells[1].getBoundingClientRect().left - cells[0].getBoundingClientRect().left;
+    if (!Number.isFinite(step) || step <= 0) return;
+    const aligned = Math.round(target.scrollLeft / step) * step;
+    if (Math.abs(target.scrollLeft - aligned) > 1) {
+      target.scrollTo({ left: aligned, behavior: 'smooth' });
+    }
+  };
+
+  target.addEventListener('scroll', () => {
+    window.clearTimeout(settleTimer);
+    settleTimer = window.setTimeout(snapToCell, 90);
+  }, { passive: true });
+  target.addEventListener('scrollend', snapToCell);
 }
 
 function toggleMonthCell(e) {
