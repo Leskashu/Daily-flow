@@ -94,6 +94,7 @@ function bindEvents() {
   document.getElementById('createHabitBtn').addEventListener('click', createHabitFromForm);
   document.getElementById('addDailyTaskBtn').addEventListener('click', () => dailyTaskDialog.showModal());
   document.getElementById('saveDailyTaskBtn').addEventListener('click', saveDailyTask);
+  document.getElementById('addRoutineBtn').addEventListener('click', addRoutineItem);
 
   document.querySelectorAll('[data-view]').forEach(button => {
     button.addEventListener('click', () => setView(button.dataset.view));
@@ -751,6 +752,19 @@ function renderPlan() {
     state.routine[index].text = input.value;
     saveState();
   }));
+}
+
+
+function addRoutineItem() {
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2, '0')}:00`;
+  if (!Array.isArray(state.routine)) state.routine = [];
+  state.routine.push({ time, text: 'Новый пункт дня' });
+  saveState();
+  renderPlan();
+  const fields = routineList.querySelectorAll('.routine-text-input');
+  fields[fields.length - 1]?.focus();
+  fields[fields.length - 1]?.select();
 }
 
 function renderArchive() {
