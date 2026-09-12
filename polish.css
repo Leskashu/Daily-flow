@@ -574,3 +574,76 @@ body::before {
   .app-dialog { width: calc(100vw - 20px) !important; max-width: 370px !important; }
   .dialog-card { padding: 14px !important; border-radius: 24px !important; }
 }
+
+
+/* Mobile repair: readable two-column views and solid tracker labels. */
+@media (max-width: 820px) {
+  .sub-grid.two-col,
+  .sub-grid.three-col,
+  .analytics-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .sub-grid.two-col .feature-panel,
+  .sub-grid.three-col .feature-panel {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .sub-grid.two-col .panel-head,
+  .sub-grid.three-col .panel-head {
+    display: block !important;
+  }
+  .sub-grid.two-col .panel-head .add-btn,
+  .sub-grid.three-col .panel-head .add-btn {
+    width: 100% !important;
+    margin-top: 8px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .stats-panel,
+  .stats-panel .top-habits {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .stats-panel .top-habit-row { min-height: 68px !important; gap: 5px !important; padding: 8px !important; }
+  .stats-panel .top-habit-row .habit-name { font-size: 10px !important; overflow-wrap: anywhere; }
+  .stats-panel .focus-card,
+  .stats-panel .small-quote { grid-column: 1 / -1 !important; }
+  .stats-panel .focus-text,
+  .stats-panel .small-quote { font-size: 11px !important; }
+
+  .month-grid-wrap {
+    scroll-snap-type: x mandatory !important;
+    scroll-padding-left: 118px !important;
+    scroll-behavior: smooth;
+  }
+  .month-grid th:not(.habit-head),
+  .month-grid td:not(.habit-head) {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .month-grid .habit-head {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 10 !important;
+    background: #13241f !important;
+    background-image: none !important;
+    box-shadow: 12px 0 18px #13241f !important;
+    isolation: isolate;
+  }
+  .month-grid thead .habit-head { z-index: 12 !important; }
+  .month-grid .habit-head::before {
+    content: "";
+    position: absolute;
+    inset: -2px 0 -2px -2px;
+    z-index: -1;
+    background: #13241f;
+  }
+
+  .today-copy strong,
+  .library-item strong,
+  .category-card strong,
+  .archive-card strong,
+  .routine-row strong { font-size: 12px !important; line-height: 1.2 !important; }
+  .feature-panel, .today-panel, .stats-panel { font-size: 11px !important; }
+}
