@@ -914,18 +914,28 @@ function addRoutineItem() {
 
 function renderArchive() {
   const months = getArchiveMonths(5);
-  archiveCards.innerHTML = months.map(date => {
+  archiveCards.innerHTML = months.map((date, index) => {
     const data = getMonthSnapshot(date);
     return `
-      <div class="archive-card">
+      <button type="button" class="archive-card" data-archive-index="${index}">
         <div>
           <div class="eyebrow">${escapeHtml(data.label)}</div>
           <div class="value">${data.percent}%</div>
           <div class="meta">${data.done} из ${data.total} выполнено · топ: ${escapeHtml(data.topHabit)}</div>
+          <div class="archive-detail">Лучшая привычка: ${escapeHtml(data.topHabit)} · серия: ${data.series} дн.</div>
         </div>
         <div class="small-note">${data.series} дн. серия</div>
-      </div>`;
+      </button>`;
   }).join('');
+  archiveCards.querySelectorAll('[data-archive-index]').forEach(button => button.addEventListener('click', () => {
+    const index = Number(button.dataset.archiveIndex);
+    state.openArchiveMonth = state.openArchiveMonth === index ? null : index;
+    archiveCards.querySelectorAll('.archive-card').forEach((card, cardIndex) => card.classList.toggle('is-expanded', cardIndex === state.openArchiveMonth));
+    saveState();
+  }));
+  if (Number.isInteger(state.openArchiveMonth)) {
+    archiveCards.querySelectorAll('.archive-card')[state.openArchiveMonth]?.classList.add('is-expanded');
+  }
   archiveInsights.innerHTML = [
     'В архиве важнее смотреть не на один плохой день, а на процент месяца.',
     'Если один месяц падает, ищи причину в перегрузе или слишком большом плане.',
@@ -979,9 +989,18 @@ function openHabitManager() {
     node.querySelector('.habit-manager-title').value = habit.title;
     node.querySelector('.habit-manager-category').value = habit.category;
     node.querySelector('.delete-habit-btn').addEventListener('click', () => deleteHabit(habit.id));
+    node.querySelector('.move-habit-up').addEventListener('click', () => moveHabitInManager(node, -1));
+    node.querySelector('.move-habit-down').addEventListener('click', () => moveHabitInManager(node, 1));
     habitManagerList.appendChild(node);
   });
   habitDialog.showModal();
+}
+
+function moveHabitInManager(node, direction) {
+  const sibling = direction < 0 ? node.previousElementSibling : node.nextElementSibling;
+  if (!sibling) return;
+  if (direction < 0) habitManagerList.insertBefore(node, sibling);
+  else habitManagerList.insertBefore(sibling, node);
 }
 
 function saveHabitManagerChanges(e) {
