@@ -67,6 +67,13 @@ const weekPills = document.getElementById('weekPills');
 const routineList = document.getElementById('routineList');
 const dayFocusInput = document.getElementById('dayFocusInput');
 const habitSearch = document.getElementById('habitSearch');
+const focusTimerDisplay = document.getElementById('focusTimerDisplay');
+const focusTimerRing = document.getElementById('focusTimerRing');
+const focusDurationWheel = document.getElementById('focusDurationWheel');
+const waterEnabled = document.getElementById('waterEnabled');
+const waterInterval = document.getElementById('waterInterval');
+const waterStatus = document.getElementById('waterStatus');
+const waterCard = document.getElementById('waterCard');
 
 const state = loadState();
 clearServiceWorkers();
@@ -83,8 +90,6 @@ function bindEvents() {
     saveState();
     renderAll();
   });
-  document.getElementById('prevMonthBtnHabits').addEventListener('click', () => shiftMonth(-1));
-  document.getElementById('nextMonthBtnHabits').addEventListener('click', () => shiftMonth(1));
 
   document.getElementById('openHabitManager').addEventListener('click', openHabitManager);
   document.getElementById('openHabitManagerBottom').addEventListener('click', openHabitManager);
@@ -95,6 +100,12 @@ function bindEvents() {
   document.getElementById('addDailyTaskBtn').addEventListener('click', () => dailyTaskDialog.showModal());
   document.getElementById('saveDailyTaskBtn').addEventListener('click', saveDailyTask);
   document.getElementById('addRoutineBtn').addEventListener('click', addRoutineItem);
+  document.getElementById('addWeeklyTaskBtn').addEventListener('click', addWeeklyTask);
+  document.getElementById('focusTimerStartBtn').addEventListener('click', toggleFocusTimer);
+  document.getElementById('focusTimerResetBtn').addEventListener('click', resetFocusTimer);
+  waterEnabled.addEventListener('change', updateWaterSettings);
+  waterInterval.addEventListener('change', updateWaterSettings);
+  document.getElementById('waterDoneBtn').addEventListener('click', markWaterDone);
 
   document.querySelectorAll('[data-view]').forEach(button => {
     button.addEventListener('click', () => setView(button.dataset.view));
@@ -258,7 +269,6 @@ function renderAll() {
   ensureStructures();
   renderHeaderDates();
   renderMonthGrid(monthGridWrap, false);
-  renderMonthGrid(monthGridWrapHabits, true);
   renderTodayList(todayList, true);
   renderTodayList(planTodayList, true);
   renderMetrics();
@@ -269,6 +279,8 @@ function renderAll() {
   renderCategoryCards();
   renderAnalytics();
   renderPlan();
+  renderFocusTimer();
+  renderWaterReminder();
   renderArchive();
   setView(state.currentView || 'overview');
 }
@@ -761,12 +773,19 @@ function buildAdvice(stats, weakestDayPercent) {
 function renderPlan() {
   weekFocusInput.value = state.weekFocus || '';
   dayFocusInput.value = state.dayFocus || 'Закрыть базовые привычки и одну ключевую задачу.';
-  weekPills.innerHTML = [
-    'Закрыть базовые привычки',
-    'Не срываться из-за одного плохого дня',
-    'Оставить время на отдых',
-    'Дойти до конца недели без хаоса'
-  ].map(item => `<span>• ${item}</span>`).join('');
+  weekPills.innerHTML = state.weeklyTasks.map((task, index) => `
+    <div class="week-task ${task.done ? 'is-done' : ''}">
+      <button class="today-check ${task.done ? 'is-done' : ''}" data-week-task-id="${task.id}" aria-label="Отметить"></button>
+      <input type="text" value="${escapeHtml(task.title)}" data-week-input="${task.id}" aria-label="Задача недели">
+      <button class="task-action" data-week-action="up" data-week-task-id="${task.id}" aria-label="Выше">↑</button>
+      <button class="task-action" data-week-action="down" data-week-task-id="${task.id}" aria-label="Ниже">↓</button>
+      <button class="task-action is-danger" data-week-action="delete" data-week-task-id="${task.id}" aria-label="Удалить">×</button>
+    </div>`).join('');
+  weekPills.querySelectorAll('[data-week-task-id]').forEach(button => button.addEventListener('click', handleWeeklyTaskAction));
+  weekPills.querySelectorAll('[data-week-input]').forEach(input => input.addEventListener('input', () => {
+    const task = state.weeklyTasks.find(item => item.id === input.dataset.weekInput);
+    if (task) { task.title = input.value; saveState(); }
+  }));
   const routine = state.routine || routineTemplate.map(([time, text]) => ({ time, text }));
   routineList.innerHTML = routine.map((item, index) => `
     <div class="routine-row routine-row-editable">
@@ -783,6 +802,103 @@ function renderPlan() {
   }));
 }
 
+function addWeeklyTask() {
+  state.weeklyTasks.push({ id: uid(), title: 'Новый пункт недели', done: false });
+  saveState();
+  renderPlan();
+  weekPills.querySelector('[data-week-input]:last-of-type')?.focus();
+}
+
+function handleWeeklyTaskAction(event) {
+  const { weekTaskId, weekAction } = event.currentTarget.dataset;
+  const index = state.weeklyTasks.findIndex(task => task.id === weekTaskId);
+  if (index < 0) return;
+  if (!weekAction) state.weeklyTasks[index].done = !state.weeklyTasks[index].done;
+  if (weekAction === 'delete') state.weeklyTasks.splice(index, 1);
+  if (weekAction === 'up' && index > 0) [state.weeklyTasks[index - 1], state.weeklyTasks[index]] = [state.weeklyTasks[index], state.weeklyTasks[index - 1]];
+  if (weekAction === 'down' && index < state.weeklyTasks.length - 1) [state.weeklyTasks[index + 1], state.weeklyTasks[index]] = [state.weeklyTasks[index], state.weeklyTasks[index + 1]];
+  saveState();
+  renderPlan();
+}
+
+function renderFocusTimer() {
+  const timer = state.focusTimerSettings;
+  const total = timer.minutes * 60;
+  const remaining = Math.max(0, timer.remainingSeconds);
+  focusTimerDisplay.textContent = formatSeconds(remaining);
+  focusTimerRing.style.setProperty('--timer-progress', total ? (1 - remaining / total) * 100 : 0);
+  document.getElementById('focusTimerStartBtn').textContent = timer.isRunning ? 'Пауза' : (remaining ? 'Старт' : 'Ещё раз');
+  focusDurationWheel.innerHTML = Array.from({ length: 24 }, (_, index) => {
+    const minutes = (index + 1) * 5;
+    return '<button class="duration-option ' + (minutes === timer.minutes ? 'is-selected' : '') + '" data-duration="' + minutes + '">' + minutes + ' мин</button>';
+  }).join('');
+  focusDurationWheel.querySelectorAll('[data-duration]').forEach(button => button.addEventListener('click', () => {
+    const minutes = Number(button.dataset.duration);
+    state.focusTimerSettings = { minutes, remainingSeconds: minutes * 60, isRunning: false };
+    saveState();
+    renderFocusTimer();
+  }));
+}
+
+function toggleFocusTimer() {
+  const timer = state.focusTimerSettings;
+  if (!timer.remainingSeconds) timer.remainingSeconds = timer.minutes * 60;
+  timer.isRunning = !timer.isRunning;
+  saveState();
+  renderFocusTimer();
+}
+
+function resetFocusTimer() {
+  state.focusTimerSettings.remainingSeconds = state.focusTimerSettings.minutes * 60;
+  state.focusTimerSettings.isRunning = false;
+  saveState();
+  renderFocusTimer();
+}
+
+function formatSeconds(value) {
+  const minutes = Math.floor(value / 60);
+  const seconds = value % 60;
+  return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+}
+
+setInterval(() => {
+  if (!state.focusTimerSettings?.isRunning) return;
+  state.focusTimerSettings.remainingSeconds = Math.max(0, state.focusTimerSettings.remainingSeconds - 1);
+  if (!state.focusTimerSettings.remainingSeconds) state.focusTimerSettings.isRunning = false;
+  saveState();
+  renderFocusTimer();
+}, 1000);
+
+function renderWaterReminder() {
+  const water = state.waterSettings;
+  waterEnabled.checked = !!water.enabled;
+  waterInterval.value = String(water.intervalMinutes);
+  if (!water.enabled) {
+    waterStatus.textContent = 'Напоминание выключено';
+    waterCard.classList.remove('is-due');
+    return;
+  }
+  const elapsed = water.lastDrankAt ? Date.now() - water.lastDrankAt : 0;
+  const due = elapsed >= water.intervalMinutes * 60000;
+  waterStatus.textContent = due ? 'Пора сделать пару глотков' : 'Следующее напоминание через ' + Math.max(1, Math.ceil((water.intervalMinutes * 60000 - elapsed) / 60000)) + ' мин';
+  waterCard.classList.toggle('is-due', due);
+}
+
+function updateWaterSettings() {
+  state.waterSettings.enabled = waterEnabled.checked;
+  state.waterSettings.intervalMinutes = Number(waterInterval.value);
+  if (state.waterSettings.enabled && !state.waterSettings.lastDrankAt) state.waterSettings.lastDrankAt = Date.now();
+  saveState();
+  renderWaterReminder();
+}
+
+function markWaterDone() {
+  state.waterSettings.lastDrankAt = Date.now();
+  saveState();
+  renderWaterReminder();
+}
+
+setInterval(renderWaterReminder, 30000);
 
 function addRoutineItem() {
   const now = new Date();
