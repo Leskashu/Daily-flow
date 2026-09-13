@@ -559,8 +559,6 @@ function renderCharts() {
   renderDonut(categoryDonut, categoryLegend, data.categories);
   weekdayChart.innerHTML = buildBarChart(data.weekdays.values, data.weekdays.labels);
   trendChartAnalytics.innerHTML = buildLineAreaChart(data.plan, data.fact, 360);
-  weeklyChartAnalytics.innerHTML = buildBarChart(data.weekly.values, data.weekly.labels, 360);
-  renderDonut(categoryDonutAnalytics, categoryLegendAnalytics, data.categories, 120, 130);
   weekdayChartAnalytics.innerHTML = buildBarChart(data.weekdays.values, data.weekdays.labels, 360);
 }
 
