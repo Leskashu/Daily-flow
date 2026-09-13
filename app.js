@@ -76,7 +76,7 @@ const waterStatus = document.getElementById('waterStatus');
 const waterCard = document.getElementById('waterCard');
 
 const state = loadState();
-clearServiceWorkers();
+registerServiceWorker();
 ensureStructures();
 renderAll();
 startClock();
@@ -123,9 +123,11 @@ function bindEvents() {
   habitSearch.addEventListener('input', renderHabitLibrary);
 }
 
-function clearServiceWorkers() {
+function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister())).catch(() => {});
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+    }, { once: true });
   }
 }
 
