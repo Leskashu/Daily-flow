@@ -51,8 +51,8 @@
     <main class="dashboard">
       <header class="topbar glass-panel">
         <div>
-          <h1>Трекер привычек</h1>
-          <p class="header-sub">Glassmorphism, monthly tracking, daily focus and analytics — наконец как у людей.</p>
+          <h1>Daily Flow</h1>
+          <p class="header-sub">Спокойная система для привычек, дел и фокуса на сегодня.</p>
         </div>
 
         <div class="topbar-center" id="topTabs">
@@ -192,6 +192,34 @@
             </article>
           </section>
 
+          <section class="tools-grid">
+            <article class="tool-card glass-panel" id="focusTimerCard">
+              <div class="panel-head compact"><div><h2>Фокус</h2><p class="panel-sub">Один отрезок — одна задача</p></div></div>
+              <div class="focus-timer-layout">
+                <div class="timer-ring" id="focusTimerRing"><strong id="focusTimerDisplay">30:00</strong><span>фокус</span></div>
+                <div class="duration-wheel" id="focusDurationWheel" aria-label="Длительность фокуса"></div>
+              </div>
+              <div class="tool-actions">
+                <button class="ghost-btn" id="focusTimerResetBtn">Сбросить</button>
+                <button class="primary-btn" id="focusTimerStartBtn">Старт</button>
+              </div>
+            </article>
+            <article class="tool-card glass-panel" id="waterCard">
+              <div class="panel-head compact"><div><h2>Пей водичку 💧</h2><p class="panel-sub" id="waterStatus">Напоминание выключено</p></div></div>
+              <div class="water-controls">
+                <label class="switch-label"><input type="checkbox" id="waterEnabled"><span>Напоминать</span></label>
+                <label class="select-label">Каждые <select id="waterInterval"><option value="30">30 мин</option><option value="45">45 мин</option><option value="60">60 мин</option><option value="90">90 мин</option><option value="120">120 мин</option></select></label>
+              </div>
+              <button class="add-btn water-done-btn" id="waterDoneBtn">Выпила</button>
+            </article>
+          </section>
+
+          <section class="rhythm-panel glass-panel">
+            <div class="panel-head compact"><div><h2>Ритм дня</h2><p class="panel-sub">Опорное расписание, которое можно менять</p></div></div>
+            <div class="routine-list" id="routineList"></div>
+            <button class="add-btn routine-add-btn" type="button" id="addRoutineBtn">＋ Добавить пункт</button>
+          </section>
+
           <section class="charts-grid">
             <article class="chart-panel glass-panel">
               <div class="panel-head compact">
@@ -262,21 +290,6 @@
             </article>
           </section>
 
-          <section class="sub-grid">
-            <article class="feature-panel glass-panel">
-              <div class="panel-head">
-                <div>
-                  <h2>Месячная матрица</h2>
-                  <p class="panel-sub">Та же сетка, но здесь акцент только на привычках</p>
-                </div>
-                <div class="panel-actions">
-                  <button class="ghost-btn" id="prevMonthBtnHabits">←</button>
-                  <button class="ghost-btn" id="nextMonthBtnHabits">→</button>
-                </div>
-              </div>
-              <div class="month-grid-wrap" id="monthGridWrapHabits"></div>
-            </article>
-          </section>
         </section>
 
         <section class="pane" data-pane="analytics">
@@ -328,7 +341,7 @@
         </section>
 
         <section class="pane" data-pane="plan">
-          <section class="sub-grid three-col">
+          <section class="sub-grid two-col">
             <article class="feature-panel glass-panel">
               <div class="panel-head compact"><div><h2>План на день</h2><p class="panel-sub">То, что важно закрыть сегодня</p></div></div>
               <div class="daily-focus-card glass-soft">
@@ -345,12 +358,7 @@
                 <textarea id="weekFocusInput" class="note-input" placeholder="Напиши главный фокус недели"></textarea>
               </div>
               <div class="plan-pills" id="weekPills"></div>
-            </article>
-
-            <article class="feature-panel glass-panel">
-              <div class="panel-head compact"><div><h2>Ритм дня</h2><p class="panel-sub">Опорное расписание</p></div></div>
-              <div class="routine-list" id="routineList"></div>
-              <button class="add-btn routine-add-btn" type="button" id="addRoutineBtn">＋ Добавить пункт</button>
+              <button class="add-btn" type="button" id="addWeeklyTaskBtn">＋ Добавить пункт</button>
             </article>
           </section>
         </section>
