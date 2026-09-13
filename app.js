@@ -168,7 +168,14 @@ function makeDefaultState() {
     currentView: 'overview',
     habits,
     completions,
+    dailyTasks: customTasks,
     customTasks,
+    weeklyTasks: [
+      { id: uid(), title: 'Выбрать три главных результата недели', done: false },
+      { id: uid(), title: 'Оставить один вечер без рабочих задач', done: false }
+    ],
+    focusTimerSettings: { minutes: 30, remainingSeconds: 1800, isRunning: false },
+    waterSettings: { enabled: false, intervalMinutes: 60, lastDrankAt: null },
     weekFocus: 'Удержать базовый ритм без перегруза.',
     dayFocus: 'Закрыть базовые привычки и одну ключевую задачу.',
     routine: routineTemplate.map(([time, text]) => ({ time, text }))
@@ -177,8 +184,17 @@ function makeDefaultState() {
 
 function ensureStructures() {
   const today = dateKey(new Date());
+  if (!state.completions) state.completions = {};
+  if (!state.customTasks) state.customTasks = {};
+  // Safe migration: all legacy customTasks remain available as dailyTasks.
+  if (!state.dailyTasks) state.dailyTasks = state.customTasks;
+  state.customTasks = state.dailyTasks;
+  if (!state.dailyTasks[today]) state.dailyTasks[today] = [];
+  if (!Array.isArray(state.weeklyTasks)) state.weeklyTasks = [];
+  if (!state.focusTimerSettings) state.focusTimerSettings = { minutes: 30, remainingSeconds: 1800, isRunning: false };
+  if (!state.waterSettings) state.waterSettings = { enabled: false, intervalMinutes: 60, lastDrankAt: null };
+  carryOverOpenTasks(today);
   if (!state.completions[today]) state.completions[today] = {};
-  if (!state.customTasks[today]) state.customTasks[today] = [];
   if (!Array.isArray(state.routine) || !state.routine.length) {
     state.routine = routineTemplate.map(([time, text]) => ({ time, text }));
   }
@@ -188,6 +204,19 @@ function ensureStructures() {
     }
   });
   saveState();
+}
+
+function carryOverOpenTasks(today) {
+  const previous = new Date();
+  previous.setDate(previous.getDate() - 1);
+  const previousKey = dateKey(previous);
+  const source = state.dailyTasks[previousKey] || [];
+  source.filter(task => !task.done && task.carriedTo !== today).forEach(task => {
+    state.dailyTasks[today].push({
+      id: uid(), title: task.title, done: false, carried: true, sourceTaskId: task.id
+    });
+    task.carriedTo = today;
+  });
 }
 
 function uid() { return Math.random().toString(36).slice(2, 10); }
@@ -231,7 +260,7 @@ function renderAll() {
   renderMonthGrid(monthGridWrap, false);
   renderMonthGrid(monthGridWrapHabits, true);
   renderTodayList(todayList, true);
-  renderTodayList(planTodayList, false);
+  renderTodayList(planTodayList, true);
   renderMetrics();
   renderTopHabits(topHabitsList);
   renderTopHabits(topHabitsListAnalytics);
@@ -338,7 +367,7 @@ function renderTodayList(target, includeDeleteButton) {
   const customItems = (state.customTasks[today] || []).map(task => ({
     id: task.id,
     title: task.title,
-    subtitle: 'доп. задача',
+    subtitle: task.carried ? 'перенесено' : 'задача дня',
     done: !!task.done,
     type: 'task'
   }));
@@ -360,7 +389,7 @@ function toggleTodayItem(e) {
   if (type === 'habit') {
     state.completions[today][id] = !state.completions[today][id];
   } else {
-    const task = state.customTasks[today].find(item => item.id === id);
+    const task = state.dailyTasks[today].find(item => item.id === id);
     if (task) task.done = !task.done;
   }
   saveState();
@@ -380,7 +409,7 @@ function saveDailyTask(e) {
   const title = dailyTaskTitle.value.trim();
   if (!title) return;
   const today = dateKey(new Date());
-  state.customTasks[today].push({ id: uid(), title, done: false });
+  state.dailyTasks[today].push({ id: uid(), title, done: false, carried: false });
   dailyTaskTitle.value = '';
   saveState();
   dailyTaskDialog.close();
