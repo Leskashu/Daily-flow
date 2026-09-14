@@ -284,6 +284,7 @@ function escapeHtml(value) {
 function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
 function setView(view) {
+  resetSwipeRow(activeSwipedItem);
   state.currentView = view;
   saveState();
   document.querySelectorAll('.pane').forEach(pane => pane.classList.toggle('is-active', pane.dataset.pane === view));
@@ -469,7 +470,7 @@ function bindTaskSwipe(row) {
 
   const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
   const finish = cancelled => {
-    if (!pointerId) return;
+    if (pointerId === null) return;
     if (row.hasPointerCapture?.(pointerId)) row.releasePointerCapture(pointerId);
     const shouldDelete = !cancelled && direction === 'horizontal' && offsetX <= -72;
     pointerId = null;
