@@ -411,13 +411,14 @@ function renderTodayList(target, includeDeleteButton) {
   }));
   const all = customItems;
   target.innerHTML = all.map(item => `
-    <div class="today-item">
+    <div class="today-item" data-task-row-id="${item.id}">
       <button class="today-check ${item.done ? 'is-done' : ''}" data-id="${item.id}" data-type="${item.type}" aria-label="Отметить"></button>
       <div class="today-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.subtitle)}</span></div>
-      ${item.type === 'task' && includeDeleteButton ? `<button class="ghost-btn delete-task-btn" data-task-id="${item.id}">Удалить</button>` : `<span class="small-note">${item.type === 'task' ? 'задача' : 'привычка'}</span>`}
+      ${item.type === 'task' && includeDeleteButton ? `<button class="task-delete" data-task-id="${item.id}" aria-label="Удалить задачу">×</button>` : `<span class="small-note">${item.type === 'task' ? 'задача' : 'привычка'}</span>`}
     </div>`).join('');
   target.querySelectorAll('.today-check').forEach(btn => btn.addEventListener('click', toggleTodayItem));
-  target.querySelectorAll('.delete-task-btn').forEach(btn => btn.addEventListener('click', deleteCustomTask));
+  target.querySelectorAll('.task-delete').forEach(btn => btn.addEventListener('click', deleteCustomTask));
+  target.querySelectorAll('[data-task-row-id]').forEach(bindTaskSwipe);
 }
 
 function toggleTodayItem(e) {
@@ -434,12 +435,37 @@ function toggleTodayItem(e) {
   renderAll();
 }
 
-function deleteCustomTask(e) {
-  const id = e.currentTarget.dataset.taskId;
+function deleteTaskById(id) {
   const today = dateKey(new Date());
-  state.customTasks[today] = state.customTasks[today].filter(item => item.id !== id);
+  state.dailyTasks[today] = (state.dailyTasks[today] || []).filter(item => item.id !== id);
+  state.customTasks = state.dailyTasks;
   saveState();
   renderAll();
+}
+
+function deleteCustomTask(e) {
+  deleteTaskById(e.currentTarget.dataset.taskId);
+}
+
+function bindTaskSwipe(row) {
+  let startX = 0;
+  let deltaX = 0;
+  row.addEventListener('pointerdown', event => {
+    startX = event.clientX;
+    deltaX = 0;
+    row.setPointerCapture?.(event.pointerId);
+  });
+  row.addEventListener('pointermove', event => {
+    if (!startX) return;
+    deltaX = Math.min(0, event.clientX - startX);
+    if (Math.abs(deltaX) > 10) row.style.transform = 'translateX(' + Math.max(deltaX, -96) + 'px)';
+  });
+  row.addEventListener('pointerup', () => {
+    if (deltaX < -72) deleteTaskById(row.dataset.taskRowId);
+    else row.style.transform = '';
+    startX = 0;
+    deltaX = 0;
+  });
 }
 
 function saveDailyTask(e) {
