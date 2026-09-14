@@ -100,6 +100,7 @@ function bindEvents() {
   document.getElementById('saveHabitChangesBtn').addEventListener('click', saveHabitManagerChanges);
   document.getElementById('createHabitBtn').addEventListener('click', createHabitFromForm);
   document.getElementById('addDailyTaskBtn').addEventListener('click', () => dailyTaskDialog.showModal());
+  document.getElementById('addDailyTaskPlanBtn').addEventListener('click', () => dailyTaskDialog.showModal());
   document.getElementById('saveDailyTaskBtn').addEventListener('click', saveDailyTask);
   document.getElementById('addRoutineBtn').addEventListener('click', addRoutineItem);
   document.getElementById('addWeeklyTaskBtn').addEventListener('click', addWeeklyTask);
