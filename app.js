@@ -501,10 +501,10 @@ function renderMetrics() {
 
 function getOverviewStats() {
   const [year, month] = state.selectedMonth.split('-').map(Number);
-  const days = daysInMonth(year, month - 1);
+  const eligibleDays = getEligibleDaysForMonth(year, month - 1);
   let doneMonth = 0;
-  let totalMonth = days * state.habits.length;
-  for (let d = 1; d <= days; d++) {
+  let totalMonth = eligibleDays * state.habits.length;
+  for (let d = 1; d <= eligibleDays; d++) {
     const key = dateKey(new Date(year, month - 1, d));
     state.habits.forEach(habit => {
       if (state.completions[key]?.[habit.id]) doneMonth++;
@@ -559,8 +559,9 @@ function getBestStreak() {
 }
 
 function renderTopHabits(target) {
+  if (!target) return;
   const [year, month] = state.selectedMonth.split('-').map(Number);
-  const days = daysInMonth(year, month - 1);
+  const days = getEligibleDaysForMonth(year, month - 1);
   const rows = state.habits.map(habit => {
     let done = 0;
     for (let d = 1; d <= days; d++) {
