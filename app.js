@@ -452,8 +452,7 @@ function deleteCustomTask(e) {
 
 function resetSwipeRow(row) {
   if (!row) return;
-  row.style.transform = '';
-  row.classList.remove('is-swiping', 'is-removing');
+  row.classList.remove('is-swiping', 'is-removing', 'is-delete-open');
   if (activeSwipedItem === row) activeSwipedItem = null;
 }
 
@@ -464,52 +463,50 @@ function resetActiveSwipe(except) {
 function bindTaskSwipe(row) {
   let startX = 0;
   let startY = 0;
-  let offsetX = 0;
+  let deltaX = 0;
   let direction = '';
   let pointerId = null;
-
   const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
+
   const finish = cancelled => {
     if (pointerId === null) return;
     if (row.hasPointerCapture?.(pointerId)) row.releasePointerCapture(pointerId);
-    const shouldDelete = !cancelled && direction === 'horizontal' && offsetX <= -72;
+    const openDelete = !cancelled && direction === 'horizontal' && deltaX <= -64;
     pointerId = null;
     startX = 0;
     startY = 0;
     direction = '';
-    if (shouldDelete) {
-      row.classList.add('is-removing');
-      row.style.transform = 'translateX(-84px)';
-      const id = row.dataset.taskRowId;
-      activeSwipedItem = null;
-      window.setTimeout(() => deleteTaskById(id), 170);
+    row.classList.remove('is-swiping');
+    if (openDelete) {
+      resetActiveSwipe(row);
+      activeSwipedItem = row;
+      row.classList.add('is-delete-open');
       return;
     }
     resetSwipeRow(row);
-    offsetX = 0;
+    deltaX = 0;
   };
 
   row.addEventListener('pointerdown', event => {
-    if (!isMobile() || event.pointerType === 'mouse') return;
+    if (!isMobile() || event.pointerType === 'mouse' || event.target.closest('.task-delete')) return;
     resetActiveSwipe(row);
     activeSwipedItem = row;
     pointerId = event.pointerId;
     startX = event.clientX;
     startY = event.clientY;
-    offsetX = 0;
+    deltaX = 0;
     direction = '';
     row.setPointerCapture?.(pointerId);
   });
   row.addEventListener('pointermove', event => {
     if (event.pointerId !== pointerId || !isMobile()) return;
-    const deltaX = event.clientX - startX;
-    const deltaY = event.clientY - startY;
-    if (!direction && (Math.abs(deltaX) > 7 || Math.abs(deltaY) > 7)) {
-      direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    const moveX = event.clientX - startX;
+    const moveY = event.clientY - startY;
+    if (!direction && (Math.abs(moveX) > 7 || Math.abs(moveY) > 7)) {
+      direction = Math.abs(moveX) > Math.abs(moveY) ? 'horizontal' : 'vertical';
     }
     if (direction !== 'horizontal') return;
-    offsetX = Math.max(-84, Math.min(0, deltaX));
-    row.style.transform = 'translateX(' + offsetX + 'px)';
+    deltaX = Math.max(-84, Math.min(0, moveX));
     row.classList.add('is-swiping');
   });
   row.addEventListener('pointerup', () => finish(false));
@@ -528,21 +525,28 @@ function saveDailyTask(e) {
   renderAll();
 }
 
+function getTodayTaskStats() {
+  const tasks = state.dailyTasks[dateKey(new Date())] || [];
+  const done = tasks.filter(task => task.done).length;
+  return { done, total: tasks.length, percent: tasks.length ? Math.round(done / tasks.length * 100) : 0 };
+}
+
 function renderMetrics() {
   const stats = getOverviewStats();
+  const taskStats = getTodayTaskStats();
   overallRing.innerHTML = buildRing(stats.overallPercent, '#7eb9aa');
   overallPercent.textContent = `${stats.overallPercent}%`;
   overallMeta.textContent = `${stats.doneMonth} из ${stats.totalMonth} выполнено`;
   streakValue.textContent = stats.streak;
   bestStreakValue.textContent = stats.bestStreak;
   habitCount.textContent = state.habits.length;
-  todayDoneCount.textContent = stats.todayDone;
-  todayTotalCount.textContent = stats.todayTotal;
-  todayMiniDone.textContent = stats.todayDone;
-  todayMiniTotal.textContent = stats.todayTotal;
-  todayBar.style.width = `${stats.todayPercent}%`;
-  todayMiniBar.style.width = `${stats.todayPercent}%`;
-  todayCompletionCopy.textContent = stats.todayPercent >= 80 ? 'Сильный день. Продолжай.' : stats.todayPercent >= 40 ? 'Нормальный темп. Ещё немного — и отлично.' : 'Пока разогрев. День ещё можно спасти.';
+  todayDoneCount.textContent = taskStats.done;
+  todayTotalCount.textContent = taskStats.total;
+  todayMiniDone.textContent = taskStats.done;
+  todayMiniTotal.textContent = taskStats.total;
+  todayBar.style.width = `${taskStats.percent}%`;
+  todayMiniBar.style.width = `${taskStats.percent}%`;
+  todayCompletionCopy.textContent = taskStats.percent >= 80 ? 'Сильный день. Продолжай.' : taskStats.percent >= 40 ? 'Нормальный темп. Ещё немного — и отлично.' : 'Пока разогрев. День ещё можно спасти.';
   if (focusText) focusText.textContent = getFocusCopy();
   if (insightText) insightText.textContent = getInsightCopy(stats);
 }
