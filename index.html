@@ -35,8 +35,8 @@
         <nav class="side-nav" id="sideNav">
           <button class="nav-item is-active" data-view="overview"><span>⌂</span><span>Главная</span></button>
           <button class="nav-item" data-view="habits"><span>◎</span><span>Привычки</span></button>
-          <button class="nav-item" data-view="analytics"><span>◫</span><span>Аналитика</span></button>
           <button class="nav-item" data-view="plan"><span>☷</span><span>План</span></button>
+          <button class="nav-item" data-view="analytics"><span>◫</span><span>Аналитика</span></button>
           <button class="nav-item" data-view="archive"><span>◌</span><span>Архив</span></button>
           <button class="nav-item" id="openHabitManagerNav"><span>⚙</span><span>Настройки</span></button>
         </nav>
@@ -58,8 +58,8 @@
         <div class="topbar-center" id="topTabs">
           <button class="tab-pill is-active" data-view="overview">Обзор</button>
           <button class="tab-pill" data-view="habits">Привычки</button>
-          <button class="tab-pill" data-view="analytics">Аналитика</button>
           <button class="tab-pill" data-view="plan">План</button>
+          <button class="tab-pill" data-view="analytics">Аналитика</button>
           <button class="tab-pill" data-view="archive">Архив</button>
         </div>
 
@@ -173,23 +173,7 @@
               <div class="today-list" id="todayList"></div>
             </article>
 
-            <article class="stats-panel glass-panel">
-              <div class="panel-head compact">
-                <div>
-                  <h2>Статистика</h2>
-                  <p class="panel-sub">Лучшие привычки и общий фокус</p>
-                </div>
-              </div>
-              <div class="top-habits" id="topHabitsList"></div>
-              <div class="focus-card glass-soft">
-                <div class="target-icon">◎</div>
-                <div>
-                  <p class="focus-title">Фокус месяца</p>
-                  <p class="focus-text" id="focusText">Стабильность лучше идеальности.</p>
-                </div>
-              </div>
-              <div class="small-quote glass-soft" id="insightText">Маленький прогресс — всё ещё прогресс.</div>
-            </article>
+
           </section>
 
           <section class="tools-grid">
@@ -328,6 +312,10 @@
               <div class="insight-stack" id="analyticsInsights"></div>
             </article>
           </section>
+          <article class="analytics-habits glass-panel">
+            <div class="panel-head compact"><div><h2>Выполнение привычек</h2><p class="panel-sub">Прогресс за выбранный месяц</p></div></div>
+            <div class="habit-completion-list" id="habitCompletionList"></div>
+          </article>
           <article class="analytics-recommendation glass-panel"><p class="eyebrow">Одна рекомендация</p><p id="analyticsAdvice">—</p></article>
         </section>
 
@@ -397,6 +385,11 @@
               <option value="Осознанность">Осознанность</option>
               <option value="Питание">Питание</option>
               <option value="Работа">Работа</option>
+        <option value="Дом">Дом</option>
+        <option value="Финансы">Финансы</option>
+        <option value="Творчество">Творчество</option>
+        <option value="Отдых">Отдых</option>
+        <option value="Уход за собой">Уход за собой</option>
             </select>
           </label>
         </div>
@@ -437,6 +430,11 @@
         <option value="Осознанность">Осознанность</option>
         <option value="Питание">Питание</option>
         <option value="Работа">Работа</option>
+        <option value="Дом">Дом</option>
+        <option value="Финансы">Финансы</option>
+        <option value="Творчество">Творчество</option>
+        <option value="Отдых">Отдых</option>
+        <option value="Уход за собой">Уход за собой</option>
       </select>
       <div class="habit-manager-actions"><button type="button" class="task-action move-habit-up" aria-label="Выше">↑</button><button type="button" class="task-action move-habit-down" aria-label="Ниже">↓</button><button type="button" class="delete-habit-btn">Удалить</button></div>
     </div>
