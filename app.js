@@ -77,6 +77,7 @@ const waterStatus = document.getElementById('waterStatus');
 const waterCard = document.getElementById('waterCard');
 
 const state = loadState();
+let activeSwipedItem = null;
 registerServiceWorker();
 ensureStructures();
 renderAll();
@@ -447,25 +448,70 @@ function deleteCustomTask(e) {
   deleteTaskById(e.currentTarget.dataset.taskId);
 }
 
+function resetSwipeRow(row) {
+  if (!row) return;
+  row.style.transform = '';
+  row.classList.remove('is-swiping', 'is-removing');
+  if (activeSwipedItem === row) activeSwipedItem = null;
+}
+
+function resetActiveSwipe(except) {
+  if (activeSwipedItem && activeSwipedItem !== except) resetSwipeRow(activeSwipedItem);
+}
+
 function bindTaskSwipe(row) {
   let startX = 0;
-  let deltaX = 0;
+  let startY = 0;
+  let offsetX = 0;
+  let direction = '';
+  let pointerId = null;
+
+  const isMobile = () => window.matchMedia('(max-width: 820px)').matches;
+  const finish = cancelled => {
+    if (!pointerId) return;
+    if (row.hasPointerCapture?.(pointerId)) row.releasePointerCapture(pointerId);
+    const shouldDelete = !cancelled && direction === 'horizontal' && offsetX <= -72;
+    pointerId = null;
+    startX = 0;
+    startY = 0;
+    direction = '';
+    if (shouldDelete) {
+      row.classList.add('is-removing');
+      row.style.transform = 'translateX(-84px)';
+      const id = row.dataset.taskRowId;
+      activeSwipedItem = null;
+      window.setTimeout(() => deleteTaskById(id), 170);
+      return;
+    }
+    resetSwipeRow(row);
+    offsetX = 0;
+  };
+
   row.addEventListener('pointerdown', event => {
+    if (!isMobile() || event.pointerType === 'mouse') return;
+    resetActiveSwipe(row);
+    activeSwipedItem = row;
+    pointerId = event.pointerId;
     startX = event.clientX;
-    deltaX = 0;
-    row.setPointerCapture?.(event.pointerId);
+    startY = event.clientY;
+    offsetX = 0;
+    direction = '';
+    row.setPointerCapture?.(pointerId);
   });
   row.addEventListener('pointermove', event => {
-    if (!startX) return;
-    deltaX = Math.min(0, event.clientX - startX);
-    if (Math.abs(deltaX) > 10) row.style.transform = 'translateX(' + Math.max(deltaX, -96) + 'px)';
+    if (event.pointerId !== pointerId || !isMobile()) return;
+    const deltaX = event.clientX - startX;
+    const deltaY = event.clientY - startY;
+    if (!direction && (Math.abs(deltaX) > 7 || Math.abs(deltaY) > 7)) {
+      direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    }
+    if (direction !== 'horizontal') return;
+    offsetX = Math.max(-84, Math.min(0, deltaX));
+    row.style.transform = 'translateX(' + offsetX + 'px)';
+    row.classList.add('is-swiping');
   });
-  row.addEventListener('pointerup', () => {
-    if (deltaX < -72) deleteTaskById(row.dataset.taskRowId);
-    else row.style.transform = '';
-    startX = 0;
-    deltaX = 0;
-  });
+  row.addEventListener('pointerup', () => finish(false));
+  row.addEventListener('pointercancel', () => finish(true));
 }
 
 function saveDailyTask(e) {
