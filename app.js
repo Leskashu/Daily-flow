@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'daily-flow-glass-desktop-v2';
 const palette = ['#7eb9aa', '#d8c0cd', '#b0a3d8', '#d6bc86', '#9aa0a8', '#eee4d4'];
-const categories = ['Здоровье', 'Развитие', 'Осознанность', 'Питание', 'Работа'];
+const categories = ['Здоровье', 'Развитие', 'Осознанность', 'Питание', 'Работа', 'Дом', 'Финансы', 'Творчество', 'Отдых', 'Уход за собой'];
 const routineTemplate = [
   ['08:00', 'Подъем, вода, старт без хаоса'],
   ['10:00', 'Фокус-блок на работу / учебу'],
@@ -62,6 +62,7 @@ const analyticsAdvice = document.getElementById('analyticsAdvice');
 const analyticsInsights = document.getElementById('analyticsInsights');
 const archiveCards = document.getElementById('archiveCards');
 const archiveInsights = document.getElementById('archiveInsights');
+const habitCompletionList = document.getElementById('habitCompletionList');
 const weekFocusInput = document.getElementById('weekFocusInput');
 const weekPills = document.getElementById('weekPills');
 const routineList = document.getElementById('routineList');
@@ -152,11 +153,10 @@ function makeDefaultState() {
   const selectedMonth = dateKeyMonth(now);
   const habits = [
     { id: uid(), title: 'Чтение 30 минут', category: 'Развитие', color: palette[2] },
-    { id: uid(), title: 'Дорожка', category: 'Здоровье', color: palette[0] },
-    { id: uid(), title: 'Закрыть белок', category: 'Питание', color: palette[3] },
-    { id: uid(), title: 'Соцсети', category: 'Осознанность', color: palette[1] },
+    { id: uid(), title: 'Беговая дорожка', category: 'Здоровье', color: palette[0] },
+    { id: uid(), title: 'Зарядка', category: 'Здоровье', color: palette[3] },
     { id: uid(), title: 'Изучение языков', category: 'Развитие', color: palette[5] },
-    { id: uid(), title: 'Моё визуальное время', category: 'Работа', color: palette[4] },
+    { id: uid(), title: 'Пить воду', category: 'Здоровье', color: palette[1] },
   ];
 
   const completions = {};
@@ -172,8 +172,10 @@ function makeDefaultState() {
     });
   }
   customTasks[dateKey(now)] = [
-    { id: uid(), title: 'Закрыть ключевую задачу дня', done: false },
-    { id: uid(), title: 'Разобрать мелкие хвосты', done: false }
+    { id: uid(), title: 'Умыться', done: false },
+    { id: uid(), title: 'Помыть посуду', done: false },
+    { id: uid(), title: 'Отправить отчет', done: false },
+    { id: uid(), title: 'Сделать поделку', done: false }
   ];
 
   return {
@@ -184,8 +186,9 @@ function makeDefaultState() {
     dailyTasks: customTasks,
     customTasks,
     weeklyTasks: [
-      { id: uid(), title: 'Выбрать три главных результата недели', done: false },
-      { id: uid(), title: 'Оставить один вечер без рабочих задач', done: false }
+      { id: uid(), title: 'Оплатить счет', done: false },
+      { id: uid(), title: 'Посмотреть вебинар', done: false },
+      { id: uid(), title: 'Записаться на танцы', done: false }
     ],
     focusTimerSettings: { minutes: 30, remainingSeconds: 1800, isRunning: false },
     waterSettings: { enabled: false, intervalMinutes: 60, lastDrankAt: null },
@@ -207,6 +210,7 @@ function ensureStructures() {
   if (!state.focusTimerSettings) state.focusTimerSettings = { minutes: 30, remainingSeconds: 1800, isRunning: false };
   if (!state.waterSettings) state.waterSettings = { enabled: false, intervalMinutes: 60, lastDrankAt: null };
   carryOverOpenTasks(today);
+  migrateKnownDemoData(today);
   if (!state.completions[today]) state.completions[today] = {};
   if (!Array.isArray(state.routine) || !state.routine.length) {
     state.routine = routineTemplate.map(([time, text]) => ({ time, text }));
@@ -217,6 +221,32 @@ function ensureStructures() {
     }
   });
   saveState();
+}
+
+function migrateKnownDemoData(today) {
+  if (state.demoMigrationV9) return;
+  const habitNames = state.habits.map(habit => habit.title);
+  const legacyHabitNames = ['Чтение 30 минут', 'Дорожка', 'Закрыть белок', 'Соцсети', 'Изучение языков', 'Моё визуальное время'];
+  if (habitNames.length === legacyHabitNames.length && legacyHabitNames.every(name => habitNames.includes(name))) {
+    const byTitle = Object.fromEntries(state.habits.map(habit => [habit.title, habit]));
+    state.habits = [
+      { ...byTitle['Чтение 30 минут'], title: 'Чтение 30 минут', category: 'Развитие' },
+      { ...byTitle['Дорожка'], title: 'Беговая дорожка', category: 'Здоровье' },
+      { ...byTitle['Закрыть белок'], title: 'Зарядка', category: 'Здоровье' },
+      { ...byTitle['Изучение языков'], title: 'Изучение языков', category: 'Развитие' },
+      { ...byTitle['Соцсети'], title: 'Пить воду', category: 'Здоровье' }
+    ];
+  }
+  const legacyDaily = ['Закрыть ключевую задачу дня', 'Разобрать мелкие хвосты'];
+  const daily = state.dailyTasks[today] || [];
+  if (daily.length === 2 && legacyDaily.every((title, index) => daily[index]?.title === title)) {
+    state.dailyTasks[today] = ['Умыться', 'Помыть посуду', 'Отправить отчет', 'Сделать поделку'].map(title => ({ id: uid(), title, done: false }));
+  }
+  const legacyWeekly = ['Выбрать три главных результата недели', 'Оставить один вечер без рабочих задач'];
+  if (state.weeklyTasks.length === 2 && legacyWeekly.every((title, index) => state.weeklyTasks[index]?.title === title)) {
+    state.weeklyTasks = ['Оплатить счет', 'Посмотреть вебинар', 'Записаться на танцы'].map(title => ({ id: uid(), title, done: false }));
+  }
+  state.demoMigrationV9 = true;
 }
 
 function carryOverOpenTasks(today) {
@@ -280,6 +310,7 @@ function renderAll() {
   renderHabitLibrary();
   renderCategoryCards();
   renderAnalytics();
+  renderHabitCompletionList();
   renderPlan();
   renderFocusTimer();
   renderWaterReminder();
@@ -318,7 +349,7 @@ function renderMonthGrid(target, compactTitle) {
   monthSummaryLabel.textContent = `${state.habits.length} привычек`;
 
   const todayKey = dateKey(new Date());
-  let headerCells = '<th class="habit-head">Привычка</th>';
+  let headerCells = '<th class="habit-head"><span class="tracker-label"> </span></th>';
   for (let d = 1; d <= days; d++) headerCells += `<th>${d}</th>`;
   headerCells += '<th class="progress-cell">Прогресс</th>';
 
@@ -371,13 +402,6 @@ function toggleMonthCell(e) {
 
 function renderTodayList(target, includeDeleteButton) {
   const today = dateKey(new Date());
-  const habitItems = filteredHabits().map(habit => ({
-    id: habit.id,
-    title: habit.title,
-    subtitle: habit.category,
-    done: !!state.completions[today]?.[habit.id],
-    type: 'habit'
-  }));
   const customItems = (state.customTasks[today] || []).map(task => ({
     id: task.id,
     title: task.title,
@@ -385,7 +409,7 @@ function renderTodayList(target, includeDeleteButton) {
     done: !!task.done,
     type: 'task'
   }));
-  const all = [...habitItems, ...customItems];
+  const all = customItems;
   target.innerHTML = all.map(item => `
     <div class="today-item">
       <button class="today-check ${item.done ? 'is-done' : ''}" data-id="${item.id}" data-type="${item.type}" aria-label="Отметить"></button>
@@ -445,8 +469,8 @@ function renderMetrics() {
   todayBar.style.width = `${stats.todayPercent}%`;
   todayMiniBar.style.width = `${stats.todayPercent}%`;
   todayCompletionCopy.textContent = stats.todayPercent >= 80 ? 'Сильный день. Продолжай.' : stats.todayPercent >= 40 ? 'Нормальный темп. Ещё немного — и отлично.' : 'Пока разогрев. День ещё можно спасти.';
-  focusText.textContent = getFocusCopy();
-  insightText.textContent = getInsightCopy(stats);
+  if (focusText) focusText.textContent = getFocusCopy();
+  if (insightText) insightText.textContent = getInsightCopy(stats);
 }
 
 function getOverviewStats() {
@@ -735,15 +759,25 @@ function renderCategoryCards() {
     </div>`).join('');
 }
 
+function getEligibleDaysForMonth(year, monthIndex) {
+  const now = new Date();
+  const selected = new Date(year, monthIndex, 1);
+  const current = new Date(now.getFullYear(), now.getMonth(), 1);
+  if (selected > current) return 0;
+  const monthDays = daysInMonth(year, monthIndex);
+  return selected.getTime() === current.getTime() ? now.getDate() : monthDays;
+}
+
 function getHabitMonthPercent(habitId) {
   const [year, month] = state.selectedMonth.split('-').map(Number);
-  const days = daysInMonth(year, month - 1);
+  const eligibleDays = getEligibleDaysForMonth(year, month - 1);
+  if (!eligibleDays) return 0;
   let done = 0;
-  for (let d = 1; d <= days; d++) {
+  for (let d = 1; d <= eligibleDays; d++) {
     const key = dateKey(new Date(year, month - 1, d));
     if (state.completions[key]?.[habitId]) done += 1;
   }
-  return Math.round((done / days) * 100);
+  return Math.round((done / eligibleDays) * 100);
 }
 
 function renderAnalytics() {
@@ -762,6 +796,14 @@ function renderAnalytics() {
     `Общий месячный процент сейчас на уровне <strong>${stats.overallPercent}%</strong>.`,
     `Если хочешь реальный рост, держи минимум обязательных привычек даже в слабые дни.`
   ].map(text => `<div class="insight-card">${text}</div>`).join('');
+}
+
+function renderHabitCompletionList() {
+  if (!habitCompletionList) return;
+  habitCompletionList.innerHTML = state.habits.map(habit => {
+    const percent = getHabitMonthPercent(habit.id);
+    return '<div class="habit-completion-row"><div class="habit-completion-head"><span class="habit-dot" style="background:' + habit.color + '"></span><strong>' + escapeHtml(habit.title) + '</strong><span>' + percent + '%</span></div><div class="habit-completion-bar"><span style="width:' + percent + '%;background:' + habit.color + '"></span></div></div>';
+  }).join('');
 }
 
 function buildAdvice(stats, weakestDayPercent) {
