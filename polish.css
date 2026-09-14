@@ -1007,3 +1007,67 @@ html { -webkit-text-size-adjust: 100%; }
 @media (prefers-reduced-motion:reduce) {
   .today-item, .today-item::after { transition:none !important; }
 }
+
+
+/* r11: fixed stationary swipe and sealed tracker backing. */
+.month-grid-wrap {
+  padding-left:0 !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+}
+.month-grid {
+  position:relative;
+  isolation:isolate;
+}
+.month-grid::before {
+  content:"";
+  position:absolute;
+  z-index:0;
+  left:0;
+  top:0;
+  bottom:0;
+  width:154px;
+  border-radius:18px 0 0 18px;
+  background:#173128;
+  box-shadow:inset 0 1px 0 rgba(241,231,214,.10);
+  pointer-events:none;
+}
+.month-grid table { position:relative; z-index:1; }
+.month-grid .habit-head { background:#173128 !important; }
+.today-item { transform:none !important; }
+.today-item::after { display:none !important; }
+.today-item.is-swiping { box-shadow:inset -2px 0 0 rgba(204,184,183,.42) !important; }
+.today-item.is-delete-open {
+  padding-right:84px !important;
+  background:linear-gradient(135deg,rgba(241,231,214,.12),rgba(113,79,87,.14)) !important;
+  box-shadow:inset -1px 0 0 rgba(218,198,191,.32),inset 0 1px 0 rgba(255,255,255,.13) !important;
+}
+@media (max-width:820px) {
+  .month-grid::before {
+    width:130px;
+    border-radius:16px 0 0 16px;
+  }
+  .month-grid-wrap { padding-left:0 !important; }
+  .today-item.is-delete-open .task-delete {
+    display:inline-flex !important;
+    position:absolute;
+    right:9px;
+    top:50%;
+    width:64px;
+    height:28px;
+    align-items:center;
+    justify-content:center;
+    transform:translateY(-50%);
+    border-radius:9px;
+    border:1px solid rgba(239,225,214,.32);
+    background:rgba(63,43,49,.90);
+    color:transparent;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  .today-item.is-delete-open .task-delete::after {
+    content:"Удалить";
+    color:#f0e4d4;
+    font-size:10px;
+    line-height:1;
+  }
+}
