@@ -860,3 +860,83 @@ button, input, select, textarea, .today-item, .day-cell { touch-action: manipula
   .archive-card .archive-detail { font-size:11px; }
   .habit-manager-actions { justify-content:flex-end; }
 }
+
+
+/* Daily Flow r9 — clean tracker and compact planning controls. */
+html { -webkit-text-size-adjust: 100%; }
+.month-grid-wrap {
+  border-radius: 20px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  clip-path: inset(0 round 20px);
+}
+.month-grid .habit-head {
+  background: rgba(17, 31, 27, .76) !important;
+  box-shadow: 8px 0 14px rgba(8, 17, 14, .24) !important;
+}
+.month-grid .habit-head::before { background: rgba(17, 31, 27, .76) !important; }
+.month-grid .habit-label {
+  min-height: 0 !important;
+  padding: 7px 5px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.month-grid .habit-name { color: var(--df-cream) !important; font-weight: 600 !important; }
+.month-grid .habit-category { display:block !important; font-size:9px !important; color:rgba(241,231,214,.58) !important; }
+.tracker-label { display:block; min-height:1px; }
+.dialog-add-block { margin-top:20px !important; padding-top:16px !important; border-top:1px solid rgba(241,231,214,.16); }
+.routine-add-btn {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:42px !important;
+  padding:10px 14px !important;
+  line-height:1 !important;
+  text-align:center !important;
+}
+.analytics-habits, .analytics-recommendation {
+  width:100%;
+  margin-top:14px;
+  padding:18px;
+  border-radius:28px;
+}
+.analytics-recommendation {
+  background:linear-gradient(138deg,rgba(241,231,214,.14),rgba(122,178,159,.06)),var(--df-glass) !important;
+  border:1px solid var(--df-line) !important;
+  box-shadow:0 20px 48px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.15) !important;
+  backdrop-filter:blur(28px) saturate(130%);
+}
+.analytics-recommendation p:last-child { margin:6px 0 0; line-height:1.45; color:rgba(241,231,214,.86); }
+.habit-completion-list { display:grid; gap:10px; }
+.habit-completion-row { min-width:0; }
+.habit-completion-head { display:grid; grid-template-columns:10px minmax(0,1fr) auto; gap:8px; align-items:center; font-size:13px; }
+.habit-completion-head strong { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.habit-completion-head > span:last-child { color:var(--df-cream); font-variant-numeric:tabular-nums; }
+.habit-completion-bar { height:7px; margin:7px 0 0 18px; border-radius:99px; overflow:hidden; background:rgba(241,231,214,.11); }
+.habit-completion-bar span { display:block; height:100%; border-radius:inherit; transition:width 220ms ease; }
+.task-delete {
+  width:28px; height:28px; border:1px solid rgba(241,231,214,.16); border-radius:9px;
+  color:rgba(241,231,214,.72); background:rgba(241,231,214,.06); font-size:18px; line-height:1;
+}
+.today-item { transition:transform 180ms ease, opacity 180ms ease; touch-action:pan-y manipulation; }
+.daily-focus-card, .note-card { min-height:0 !important; padding:13px !important; }
+.daily-focus-card .note-input, .note-card .note-input { min-height:84px !important; font-size:14px !important; line-height:1.35 !important; font-weight:400 !important; }
+.water-card.is-due { border-color:rgba(220,239,226,.54) !important; box-shadow:0 0 0 1px rgba(190,225,211,.2),0 16px 42px rgba(93,160,140,.22),inset 0 1px 0 rgba(255,255,255,.22) !important; }
+@media (max-width:820px) {
+  .month-grid-wrap { border-radius:18px !important; clip-path:inset(0 round 18px); }
+  .month-grid th:nth-child(2), .month-grid td:nth-child(2) { padding-left:16px !important; }
+  .month-grid .habit-head { background:rgba(17,31,27,.82) !important; box-shadow:8px 0 14px rgba(8,17,14,.24) !important; }
+  .month-grid .habit-head::before { background:rgba(17,31,27,.82) !important; }
+  .month-grid .habit-label { padding:7px 5px !important; }
+  .analytics-habits, .analytics-recommendation { padding:13px; border-radius:23px; margin-top:10px; }
+  .habit-completion-head { font-size:12px; }
+  .task-delete { width:25px; height:25px; font-size:16px; }
+  .today-item::after { content:""; position:absolute; inset:0 0 0 auto; width:0; border-radius:14px; background:rgba(169,79,70,.55); z-index:-1; transition:width 160ms ease; }
+  .today-item:active::after { width:58px; }
+  .daily-focus-card .note-input, .note-card .note-input { min-height:78px !important; font-size:13px !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .water-card.is-due { animation:none !important; box-shadow:0 0 0 1px rgba(190,225,211,.3),inset 0 1px 0 rgba(255,255,255,.22) !important; }
+}
