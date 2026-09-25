@@ -919,7 +919,6 @@ function renderPlan() {
   routineList.querySelectorAll('.routine-delete').forEach(button => button.addEventListener('click', () => {
     state.routine.splice(Number(button.dataset.routineIndex), 1); saveState(); renderPlan();
   }));
-  routineList.querySelectorAll('.routine-row').forEach(bindSwipeDelete);
 }
 
 function addWeeklyTask() {
