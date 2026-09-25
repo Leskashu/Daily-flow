@@ -991,7 +991,6 @@ setInterval(() => {
 
 function renderWaterTracker() {
   const count = Math.max(0, Math.min(10, Number(state.waterByDate[dateKey(new Date())]) || 0));
-  waterStatus.textContent = `${count} / 10`;
   const progress = document.getElementById('waterProgress');
   const dots = document.getElementById('waterDots');
   if (progress) progress.textContent = `${count} / 10`;
