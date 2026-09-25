@@ -12,8 +12,8 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
-  <link rel="stylesheet" href="styles.css?v=mobile-r11" />
-  <link rel="stylesheet" href="polish.css?v=mobile-r11" />
+  <link rel="stylesheet" href="styles.css?v=mobile-r12" />
+  <link rel="stylesheet" href="polish.css?v=mobile-r12" />
 </head>
 <body>
   <div class="ambient ambient-1"></div>
@@ -65,7 +65,7 @@
 
         <div class="topbar-right">
           <div class="search-box glass-soft">
-            <span>⌕</span>
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
             <input type="text" id="habitSearch" placeholder="Поиск привычек..." aria-label="Поиск привычек" />
           </div>
           <div class="header-date" id="headerDate"></div>
@@ -189,10 +189,10 @@
               </div>
             </article>
             <article class="tool-card glass-panel" id="waterCard">
-              <div class="panel-head compact"><div><h2>Пей водичку 💧</h2><p class="panel-sub" id="waterStatus">Напоминание выключено</p></div></div>
-              <div class="water-controls">
-                <label class="switch-label"><input type="checkbox" id="waterEnabled"><span>Напоминать</span></label>
-                <label class="select-label">Каждые <select id="waterInterval"><option value="30">30 мин</option><option value="45">45 мин</option><option value="60">60 мин</option><option value="90">90 мин</option><option value="120">120 мин</option></select></label>
+              <div class="panel-head compact"><div><h2>Пей водичку 💧</h2><p class="panel-sub">Вода сегодня</p></div></div>
+              <div class="water-progress" aria-label="Выпитая вода за сегодня">
+                <strong id="waterProgress">0 / 10</strong>
+                <div class="water-dots" id="waterDots"></div>
               </div>
               <button class="add-btn water-done-btn" id="waterDoneBtn">Выпила</button>
             </article>
