@@ -1,5 +1,5 @@
-const CACHE_NAME = 'daily-flow-v11';
-const APP_SHELL = ['./', './index.html', './styles.css?v=mobile-r11', './polish.css?v=mobile-r11', './app.js?v=mobile-r11', './manifest.json', './icon.svg'];
+const CACHE_NAME = 'daily-flow-v12';
+const APP_SHELL = ['./', './index.html', './styles.css?v=mobile-r12', './polish.css?v=mobile-r12', './app.js?v=mobile-r12', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
