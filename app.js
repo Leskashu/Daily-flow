@@ -106,8 +106,6 @@ function bindEvents() {
   document.getElementById('addWeeklyTaskBtn').addEventListener('click', addWeeklyTask);
   document.getElementById('focusTimerStartBtn').addEventListener('click', toggleFocusTimer);
   document.getElementById('focusTimerResetBtn').addEventListener('click', resetFocusTimer);
-  waterEnabled.addEventListener('change', updateWaterSettings);
-  waterInterval.addEventListener('change', updateWaterSettings);
   document.getElementById('waterDoneBtn').addEventListener('click', markWaterDone);
 
   document.querySelectorAll('[data-view]').forEach(button => {
@@ -136,14 +134,16 @@ function registerServiceWorker() {
 
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw) {
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      console.error(e);
-    }
+  if (!raw) return makeDefaultState();
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed;
+    throw new Error('State is not an object');
+  } catch (error) {
+    localStorage.setItem(`${STORAGE_KEY}-backup-${Date.now()}`, raw);
+    console.error('Daily Flow state backup created after parse error', error);
+    return makeDefaultState();
   }
-  return makeDefaultState();
 }
 
 function saveState() {
@@ -193,7 +193,9 @@ function makeDefaultState() {
       { id: uid(), title: 'Записаться на танцы', done: false }
     ],
     focusTimerSettings: { minutes: 30, remainingSeconds: 1800, isRunning: false },
+    schemaVersion: 3,
     waterSettings: { enabled: false, intervalMinutes: 60, lastDrankAt: null },
+    waterByDate: {},
     weekFocus: 'Удержать базовый ритм без перегруза.',
     dayFocus: 'Закрыть базовые привычки и одну ключевую задачу.',
     routine: routineTemplate.map(([time, text]) => ({ time, text }))
@@ -202,6 +204,8 @@ function makeDefaultState() {
 
 function ensureStructures() {
   const today = dateKey(new Date());
+  // Additive schema migration preserves all existing user data.
+  if (!Number.isInteger(state.schemaVersion)) state.schemaVersion = 1;
   if (!state.completions) state.completions = {};
   if (!state.customTasks) state.customTasks = {};
   // Safe migration: all legacy customTasks remain available as dailyTasks.
@@ -211,6 +215,9 @@ function ensureStructures() {
   if (!Array.isArray(state.weeklyTasks)) state.weeklyTasks = [];
   if (!state.focusTimerSettings) state.focusTimerSettings = { minutes: 30, remainingSeconds: 1800, isRunning: false };
   if (!state.waterSettings) state.waterSettings = { enabled: false, intervalMinutes: 60, lastDrankAt: null };
+  if (!state.waterByDate || typeof state.waterByDate !== 'object' || Array.isArray(state.waterByDate)) state.waterByDate = {};
+  if (state.schemaVersion < 2) state.schemaVersion = 2;
+  if (state.schemaVersion < 3) state.schemaVersion = 3;
   carryOverOpenTasks(today);
   migrateKnownDemoData(today);
   if (!state.completions[today]) state.completions[today] = {};
@@ -316,7 +323,7 @@ function renderAll() {
   renderHabitCompletionList();
   renderPlan();
   renderFocusTimer();
-  renderWaterReminder();
+  renderWaterTracker();
   renderArchive();
   setView(state.currentView || 'overview');
 }
@@ -354,20 +361,16 @@ function renderMonthGrid(target, compactTitle) {
   const todayKey = dateKey(new Date());
   let headerCells = '<th class="habit-head"><span class="tracker-label"> </span></th>';
   for (let d = 1; d <= days; d++) headerCells += `<th>${d}</th>`;
-  headerCells += '<th class="progress-cell">Прогресс</th>';
 
   let rows = filteredHabits().map(habit => {
     let dayCells = '';
-    let doneCount = 0;
     for (let d = 1; d <= days; d++) {
       const cellDate = new Date(year, month - 1, d);
       const key = dateKey(cellDate);
       const done = !!state.completions[key]?.[habit.id];
-      if (done) doneCount++;
       const isToday = key === todayKey;
       dayCells += `<td><button class="day-cell ${done ? 'is-done' : ''} ${isToday ? 'today-outline' : ''}" style="background:${done ? habit.color : 'rgba(255,255,255,0.04)'}" data-habit-id="${habit.id}" data-date="${key}" aria-label="${escapeHtml(habit.title)} ${d}"></button></td>`;
     }
-    const percent = Math.round((doneCount / days) * 100);
     return `
       <tr>
         <td class="habit-head">
@@ -380,12 +383,6 @@ function renderMonthGrid(target, compactTitle) {
           </div>
         </td>
         ${dayCells}
-        <td class="progress-cell">
-          <div class="row-progress">
-            <span>${percent}%</span>
-            <div class="row-progress-bar"><span style="width:${percent}%; background:${habit.color}"></span></div>
-          </div>
-        </td>
       </tr>`;
   }).join('');
 
@@ -421,7 +418,7 @@ function renderTodayList(target, includeDeleteButton) {
     </div>`).join('');
   target.querySelectorAll('.today-check').forEach(btn => btn.addEventListener('click', toggleTodayItem));
   target.querySelectorAll('.task-delete').forEach(btn => btn.addEventListener('click', deleteCustomTask));
-  target.querySelectorAll('[data-task-row-id]').forEach(bindTaskSwipe);
+  target.querySelectorAll('[data-task-row-id]').forEach(bindSwipeDelete);
 }
 
 function toggleTodayItem(e) {
@@ -460,7 +457,7 @@ function resetActiveSwipe(except) {
   if (activeSwipedItem && activeSwipedItem !== except) resetSwipeRow(activeSwipedItem);
 }
 
-function bindTaskSwipe(row) {
+function bindSwipeDelete(row) {
   let startX = 0;
   let startY = 0;
   let deltaX = 0;
@@ -488,7 +485,7 @@ function bindTaskSwipe(row) {
   };
 
   row.addEventListener('pointerdown', event => {
-    if (!isMobile() || event.pointerType === 'mouse' || event.target.closest('.task-delete')) return;
+    if (!isMobile() || event.pointerType === 'mouse' || event.target.closest('.task-delete, .routine-delete, .task-action')) return;
     resetActiveSwipe(row);
     activeSwipedItem = row;
     pointerId = event.pointerId;
@@ -894,33 +891,35 @@ function buildAdvice(stats, weakestDayPercent) {
 function renderPlan() {
   weekFocusInput.value = state.weekFocus || '';
   dayFocusInput.value = state.dayFocus || 'Закрыть базовые привычки и одну ключевую задачу.';
-  weekPills.innerHTML = state.weeklyTasks.map((task, index) => `
+  weekPills.innerHTML = state.weeklyTasks.map(task => `
     <div class="week-task ${task.done ? 'is-done' : ''}">
       <button class="today-check ${task.done ? 'is-done' : ''}" data-week-task-id="${task.id}" aria-label="Отметить"></button>
       <input type="text" value="${escapeHtml(task.title)}" data-week-input="${task.id}" aria-label="Задача недели">
-      <button class="task-action" data-week-action="up" data-week-task-id="${task.id}" aria-label="Выше">↑</button>
-      <button class="task-action" data-week-action="down" data-week-task-id="${task.id}" aria-label="Ниже">↓</button>
-      <button class="task-action is-danger" data-week-action="delete" data-week-task-id="${task.id}" aria-label="Удалить">×</button>
+      <div class="task-actions">
+        <button class="task-action" data-week-action="up" data-week-task-id="${task.id}" aria-label="Выше">↑</button>
+        <button class="task-action" data-week-action="down" data-week-task-id="${task.id}" aria-label="Ниже">↓</button>
+        <button class="task-action is-danger" data-week-action="delete" data-week-task-id="${task.id}" aria-label="Удалить">×</button>
+      </div>
     </div>`).join('');
   weekPills.querySelectorAll('[data-week-task-id]').forEach(button => button.addEventListener('click', handleWeeklyTaskAction));
   weekPills.querySelectorAll('[data-week-input]').forEach(input => input.addEventListener('input', () => {
     const task = state.weeklyTasks.find(item => item.id === input.dataset.weekInput);
     if (task) { task.title = input.value; saveState(); }
   }));
+  weekPills.querySelectorAll('.week-task').forEach(bindSwipeDelete);
   const routine = state.routine || routineTemplate.map(([time, text]) => ({ time, text }));
   routineList.innerHTML = routine.map((item, index) => `
     <div class="routine-row routine-row-editable">
       <input class="routine-time-input" type="time" value="${escapeHtml(item.time)}" aria-label="Время пункта ${index + 1}">
       <input class="routine-text-input" type="text" value="${escapeHtml(item.text)}" aria-label="Описание пункта ${index + 1}">
+      <button class="task-action is-danger routine-delete" type="button" data-routine-index="${index}" aria-label="Удалить пункт">×</button>
     </div>`).join('');
-  routineList.querySelectorAll('.routine-time-input').forEach((input, index) => input.addEventListener('input', () => {
-    state.routine[index].time = input.value;
-    saveState();
+  routineList.querySelectorAll('.routine-time-input').forEach((input, index) => input.addEventListener('input', () => { state.routine[index].time = input.value; saveState(); }));
+  routineList.querySelectorAll('.routine-text-input').forEach((input, index) => input.addEventListener('input', () => { state.routine[index].text = input.value; saveState(); }));
+  routineList.querySelectorAll('.routine-delete').forEach(button => button.addEventListener('click', () => {
+    state.routine.splice(Number(button.dataset.routineIndex), 1); saveState(); renderPlan();
   }));
-  routineList.querySelectorAll('.routine-text-input').forEach((input, index) => input.addEventListener('input', () => {
-    state.routine[index].text = input.value;
-    saveState();
-  }));
+  routineList.querySelectorAll('.routine-row').forEach(bindSwipeDelete);
 }
 
 function addWeeklyTask() {
@@ -990,36 +989,22 @@ setInterval(() => {
   renderFocusTimer();
 }, 1000);
 
-function renderWaterReminder() {
-  const water = state.waterSettings;
-  waterEnabled.checked = !!water.enabled;
-  waterInterval.value = String(water.intervalMinutes);
-  if (!water.enabled) {
-    waterStatus.textContent = 'Напоминание выключено';
-    waterCard.classList.remove('is-due');
-    return;
-  }
-  const elapsed = water.lastDrankAt ? Date.now() - water.lastDrankAt : 0;
-  const due = elapsed >= water.intervalMinutes * 60000;
-  waterStatus.textContent = due ? 'Пора сделать пару глотков' : 'Следующее напоминание через ' + Math.max(1, Math.ceil((water.intervalMinutes * 60000 - elapsed) / 60000)) + ' мин';
-  waterCard.classList.toggle('is-due', due);
-}
-
-function updateWaterSettings() {
-  state.waterSettings.enabled = waterEnabled.checked;
-  state.waterSettings.intervalMinutes = Number(waterInterval.value);
-  if (state.waterSettings.enabled && !state.waterSettings.lastDrankAt) state.waterSettings.lastDrankAt = Date.now();
-  saveState();
-  renderWaterReminder();
+function renderWaterTracker() {
+  const count = Math.max(0, Math.min(10, Number(state.waterByDate[dateKey(new Date())]) || 0));
+  waterStatus.textContent = `${count} / 10`;
+  const progress = document.getElementById('waterProgress');
+  const dots = document.getElementById('waterDots');
+  if (progress) progress.textContent = `${count} / 10`;
+  if (dots) dots.innerHTML = Array.from({ length: 10 }, (_, index) => `<span class="water-dot ${index < count ? 'is-filled' : ''}" aria-hidden="true"></span>`).join('');
+  document.getElementById('waterDoneBtn').disabled = count >= 10;
 }
 
 function markWaterDone() {
-  state.waterSettings.lastDrankAt = Date.now();
+  const today = dateKey(new Date());
+  state.waterByDate[today] = Math.min(10, (Number(state.waterByDate[today]) || 0) + 1);
   saveState();
-  renderWaterReminder();
+  renderWaterTracker();
 }
-
-setInterval(renderWaterReminder, 30000);
 
 function addRoutineItem() {
   const now = new Date();
