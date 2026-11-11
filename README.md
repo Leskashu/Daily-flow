@@ -2,7 +2,7 @@
 
 **Самостоятельный UX/UI- и веб-проект Олеси Кашубиной.** Адаптивное PWA-приложение для привычек, планирования дня и отслеживания прогресса.
 
-**[Открыть приложение](https://leskashu.github.io/Daily-flow/)** · **[Кейс в портфолио](https://kashubina.ru/work/daily-flow)** · **[Портфолио автора](https://kashubina.ru/)**
+**[Открыть приложение](https://leskashu.github.io/Daily-flow/)** · **[Кейс в портфолио](https://kashubina.ru/work/daily-flow)** · **[Другие проекты и профиль автора](docs/ABOUT_OLESYA.md)**
 
 ---
 
